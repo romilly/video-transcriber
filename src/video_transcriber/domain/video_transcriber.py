@@ -2,24 +2,31 @@
 
 from typing import Optional, Iterator
 from pathlib import Path
+import tempfile
+import os
 
 from .models import FrameResult, TranscriptResult, AudioSegment
 from .frame_comparison import compute_frame_hash, frames_similar
 from ..ports.video_reader import VideoReader
 from ..ports.vision_transcriber import VisionTranscriber
+from ..ports.audio_extractor import AudioExtractor, AudioExtractionError
+from ..ports.audio_transcriber import AudioTranscriber, AudioTranscriptionError
 
 
 class VideoTranscriber:
     """Core use case for transcribing videos.
 
     Uses dependency injection to accept port implementations for reading
-    video and transcribing images, enabling testing without external dependencies.
+    video, transcribing images, and optionally transcribing audio.
+    Enables testing without external dependencies.
     """
 
     def __init__(
         self,
         video_reader: VideoReader,
         vision_transcriber: VisionTranscriber,
+        audio_extractor: Optional[AudioExtractor] = None,
+        audio_transcriber: Optional[AudioTranscriber] = None,
         similarity_threshold: float = 0.92,
         min_frame_interval: int = 15
     ):
@@ -28,11 +35,15 @@ class VideoTranscriber:
         Args:
             video_reader: Port for reading video files
             vision_transcriber: Port for transcribing images
+            audio_extractor: Optional port for extracting audio from video
+            audio_transcriber: Optional port for transcribing audio to text
             similarity_threshold: Frames more similar than this are considered duplicates (0-1)
             min_frame_interval: Minimum frames between captures (avoids transition frames)
         """
         self.video_reader = video_reader
         self.vision_transcriber = vision_transcriber
+        self.audio_extractor = audio_extractor
+        self.audio_transcriber = audio_transcriber
         self.similarity_threshold = similarity_threshold
         self.min_frame_interval = min_frame_interval
 
@@ -79,27 +90,89 @@ class VideoTranscriber:
                 last_hash = current_hash
                 last_captured_frame = frame.frame_number
 
+    def _merge_audio_with_frames(
+        self,
+        frames: list[FrameResult],
+        audio_segments: list[AudioSegment]
+    ) -> list[FrameResult]:
+        """Associate audio segments with frames based on timestamps.
+
+        Each frame gets audio segments that start between its timestamp
+        and the next frame's timestamp.
+
+        Args:
+            frames: List of frame results with timestamps
+            audio_segments: List of audio segments with timestamps
+
+        Returns:
+            Updated frames list with audio_segments populated
+        """
+        if not audio_segments:
+            return frames
+
+        for i, frame in enumerate(frames):
+            # Find time range for this frame
+            start_time = frame.timestamp_seconds
+            if i + 1 < len(frames):
+                end_time = frames[i + 1].timestamp_seconds
+            else:
+                # Last frame: include all remaining audio
+                end_time = float('inf')
+
+            # Find audio segments that start in this time range
+            frame.audio_segments = [
+                seg for seg in audio_segments
+                if start_time <= seg.start_seconds < end_time
+            ]
+
+        return frames
+
     def process_video(
         self,
         video_path: str,
         sample_interval: int = 30,
         prompt: Optional[str] = None,
-        transcribe_visuals: bool = True
+        transcribe_visuals: bool = True,
+        transcribe_audio: bool = True
     ) -> TranscriptResult:
-        """Process entire video: extract distinct frames and transcribe visuals.
+        """Process entire video: extract frames, transcribe visuals and audio.
 
         Args:
             video_path: Path to video file
             sample_interval: Check every N frames for changes
             prompt: Custom prompt for visual transcription
             transcribe_visuals: Whether to transcribe visuals with vision model
+            transcribe_audio: Whether to transcribe audio (requires audio ports)
 
         Returns:
-            TranscriptResult with frames
+            TranscriptResult with frames and audio segments
         """
         # Default prompt if not specified
         if prompt is None:
             prompt = "Transcribe all text visible in this presentation slide. Include headings, bullet points, and any other text. Format it clearly."
+
+        # Extract and transcribe audio (if requested and adapters available)
+        audio_segments = []
+        audio_path = None
+        if transcribe_audio and self.audio_extractor and self.audio_transcriber:
+            try:
+                # Extract audio from video
+                audio_path = self.audio_extractor.extract_audio(video_path)
+
+                # Transcribe audio
+                audio_segments = self.audio_transcriber.transcribe_audio(audio_path)
+
+            except (AudioExtractionError, AudioTranscriptionError) as e:
+                # Log warning but continue with visual transcription
+                # In production, you might want proper logging here
+                pass
+            finally:
+                # Clean up temp audio file if it was created
+                if audio_path and audio_path.startswith(tempfile.gettempdir()):
+                    try:
+                        os.remove(audio_path)
+                    except (FileNotFoundError, PermissionError):
+                        pass
 
         # Extract and transcribe frames
         frames = []
@@ -112,5 +185,7 @@ class VideoTranscriber:
 
             frames.append(frame_result)
 
-        # Return result (no audio segments for now - that's future work)
-        return TranscriptResult(frames=frames, audio_segments=[])
+        # Merge audio with frames based on timestamps
+        frames = self._merge_audio_with_frames(frames, audio_segments)
+
+        return TranscriptResult(frames=frames, audio_segments=audio_segments)
