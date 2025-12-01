@@ -1,0 +1,6 @@
+# Production dependencies
+# Add your dependencies here
+
+# Development dependencies (install with pip install -e .[test])
+# pytest>=7.0.0
+# pytest-cov
