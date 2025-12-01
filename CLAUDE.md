@@ -4,12 +4,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-**video-transcriber** - A Python project following TDD principles.
+**video-transcriber** - Extracts visually distinct frames from videos and transcribes both visual content (slides/presentations) and audio using local LLMs and Whisper.
 
 ## Core Architecture
 
+### Current State
+- **notebooks/spike.ipynb** - Contains the working `VideoTranscriber` class implementation (spike/prototype code)
+- **src/video_transcriber/** - Package structure exists but is mostly empty; code needs to be moved from notebook
+- **tests/** - Test structure exists with `data/` and `output/` subdirectories
+
 ### Key Components
-- **video_transcriber/main.py** - Main application logic
+The `VideoTranscriber` class (currently in notebook) handles:
+1. **Frame extraction** - Uses perceptual hashing to detect distinct frames/slides, with configurable ignore regions for presenter windows
+2. **Visual transcription** - Uses Ollama API with vision models (LLaVA) to transcribe slide content
+3. **Audio extraction** - Uses ffmpeg to extract audio from video
+4. **Audio transcription** - Uses faster-whisper (local Whisper model) for speech-to-text
+5. **Timeline merging** - Associates audio segments with corresponding frames based on timestamps
+
+### Key Dependencies
+- **opencv-python** - Video processing and frame extraction
+- **numpy** - Image processing and perceptual hashing
+- **requests** - Ollama API communication
+- **pillow** - Image encoding
+- **faster-whisper** - Local audio transcription (CPU/GPU)
+- **ffmpeg** (system dependency) - Audio extraction from video
+
+### External Services
+- **Ollama** - Must be running locally at `http://localhost:11434` with a vision model (e.g., `llava`) installed
 
 ## Development Approach
 
@@ -62,8 +83,47 @@ pytest -k "test_name_pattern" -v
 
 ## Testing Structure
 
-Test data in `tests/data/`, output in `tests/output/`.
+- `tests/data/` - Test input data (videos, etc.)
+- `tests/output/` - Test output artifacts
 
-## Key Dependencies
+## Installation & Setup
 
-- **pytest** (>=7.0.0) - Testing framework
+```bash
+# Install package in editable mode
+pip install -e .
+
+# Install with all dependencies (including dev/test dependencies)
+pip install -e .[test]
+
+# Install Ollama and pull a vision model (required for visual transcription)
+# See: https://ollama.ai
+ollama pull llava
+
+# Ensure ffmpeg is installed (required for audio extraction)
+# Ubuntu/Debian: apt install ffmpeg
+# macOS: brew install ffmpeg
+```
+
+## Running the Code
+
+```bash
+# Run the spike notebook implementation
+jupyter notebook notebooks/spike.ipynb
+
+# Process a video (when code is moved to src/)
+python -m video_transcriber <video_file> [output_dir]
+
+# Preview ignore regions for presenter windows
+python -m video_transcriber <video_file> --preview
+```
+
+## Configuration Options
+
+The `VideoTranscriber` class accepts these key parameters:
+- `ollama_url` - Ollama API endpoint (default: `http://localhost:11434`)
+- `vision_model` - Vision model name (default: `llava`)
+- `whisper_model` - Whisper model size: `tiny`, `base`, `small`, `medium`, `large-v3` (default: `base`)
+- `similarity_threshold` - Frame similarity threshold 0-1 (default: `0.92`) - lower values = more frames captured
+- `min_frame_interval` - Minimum frames between captures to avoid transitions (default: `15`)
+
+Ignore regions format: `[(x, y, width, height), ...]` as fractions 0-1 of frame dimensions
