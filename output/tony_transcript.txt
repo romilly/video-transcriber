@@ -1,0 +1,257 @@
+VIDEO TRANSCRIPTION RESULTS
+================================================================================
+
+Total Frames Extracted: 4
+Total Audio Segments: 87
+================================================================================
+
+
+================================================================================
+SLIDE 1/4 - [00:00] (Frame #30)
+================================================================================
+
+📊 VISUAL CONTENT:
+--------------------------------------------------------------------------------
+The image shows the "Pi to Pico connection" interface, which displays the following information:
+
+Single Pico Card
+- USB-A to USB-C cable
+- Serial Communication
+- 5V Power Supply
+
+Multiple Pico Cards
+- Powered USB Hub & Extender
+- USB cable
+- Serial Communication
+- 5V Power Supply
+
+The image also shows a "Pause recording" section with options to enable recording hotkey, enable sound notifications, and configure the hotkey.
+
+The "Information" section displays details about the recording, such as total time, FPS in/out, size in/out, file name, file size, and bit rate.
+
+The "Preview" section shows the frame rate and notes that previewing requires extra CPU time, especially at high frame rates.
+
+
+================================================================================
+SLIDE 2/4 - [00:01] (Frame #60)
+================================================================================
+
+📊 VISUAL CONTENT:
+--------------------------------------------------------------------------------
+The image is titled "Pi to Pico - Using Pico(s) as Raspi GPIO Expanders" and is presented by Tony Smith on 17 June 2025 at Raspberry Pint. The main text in the image says "Raspberry Pint" and shows the Raspberry Pi logo along with social media icons for Facebook and Twitter with the handle "@RaspberryPint".
+
+
+================================================================================
+SLIDE 3/4 - [00:06] (Frame #210)
+================================================================================
+
+📊 VISUAL CONTENT:
+--------------------------------------------------------------------------------
+The image displays the following text:
+
+PI TO PICO
+Using Pico(s) as Raspi GPIO Expanders
+
+🎤 AUDIO DURING THIS SLIDE:
+--------------------------------------------------------------------------------
+[00:11] In real life.
+[00:14] Is it. It haven't been three thirty in the morning.
+[00:18] And I'm not getting up at that time of the morning.
+[00:21] And I guess you guys can hear him. Okay.
+[00:23] Yeah.
+[00:29] So for the benefit of people, I think I've been coming along to the.
+[00:33] I was running up started.
+[00:36] The Raspberry Pi group for about nine years now.
+[00:40] I've.
+[00:41] I first started when I was visiting London about nine years ago.
+[00:44] I came along one night for a.
+[00:48] A pint.
+[00:49] And I have participated by zoom ever since.
+[00:52] Except that are getting up at this time of the year.
+[00:55] It's getting up at three thirty in the morning is a bit.
+[00:59] It's a bit hard.
+[01:00] So anyway, I'm in London. I'm visiting London for a few weeks.
+[01:03] I thought we better come along again.
+[01:06] So I for those who don't know me.
+[01:09] I I worth an a factory in Australia.
+[01:12] As a manufacturer.
+[01:14] We make cable.
+[01:15] We we start off with a raw copper and.
+[01:18] Make cable all the way up to, you know,
+[01:21] a multi core complex hybrid cables, et cetera.
+[01:24] And then turn them into the looms.
+[01:26] Which going to all sorts of appliances.
+[01:29] Caravans, automotive, et cetera.
+[01:31] So we have this problem of of of building a loom.
+[01:36] And then wanting to test it.
+[01:38] So you've got a you've got a half a dozen cables.
+[01:41] Half a dozen cables.
+[01:42] Half a dozen.
+[01:43] You know, half a dozen cables, half a dozen wires.
+[01:46] Some connectors that each end.
+[01:48] And you've got to make sure that.
+[01:51] When you're building thousands of them at a time.
+[01:54] And we've done some of them where we've done not in batches of 10,000.
+[01:57] It's really easy after a while to to make a mistake.
+[02:02] And when you're in mass manufacturing when you make a mistake.
+[02:04] You don't make one.
+[02:05] You make.
+[02:07] A lot.
+[02:09] And so what I'm showing here is a test set.
+[02:12] For testing cables and looms.
+[02:15] Now, a loom can be just a simple, you know, three or four wires connected to each end.
+[02:20] Very straight.
+[02:21] But it could have a T piece at T T connection in it.
+[02:25] It could have a multiple connectors.
+[02:28] It might be connectors on one end.
+[02:30] And the other end might be just bare cut wires that are going to be.
+[02:34] That stripped and then sold it into something.
+[02:37] So we have all these combinations.
+[02:39] So I'm looking at building.
+[02:43] The next generation of a Raspberry Pi controlling.
+[02:48] At a series of IO devices.
+[02:51] And so.
+[02:52] In this presentation, I'm talking about how I've used a pco or pcos.
+[03:00] Okay.
+[03:01] Get up.
+[03:02] Coming up there.
+[03:04] Okay.
+
+
+================================================================================
+SLIDE 4/4 - [03:04] (Frame #5550)
+================================================================================
+
+📊 VISUAL CONTENT:
+--------------------------------------------------------------------------------
+The image shows a "Cable Harness Test Set" with the following information:
+
+Checking for:
+- Swapped Wires - wire inserted in wrong connector hole
+- Open Circuit wires
+- Short Circuits between two wires
+- Can accept Spliced wires (3 or more ends) or Fly Leads where there is bare wire and no connector
+
+The image also shows two test results:
+1. Testing Model E - FAIL, Error Code = 0
+2. Testing Model F - PASS
+
+🎤 AUDIO DURING THIS SLIDE:
+--------------------------------------------------------------------------------
+[03:05] So what I'm checking for is swap wise.
+[03:09] The person is assembling it.
+[03:11] Let's put the wrong wire in the wrong hole in the connector into the housing.
+[03:15] We've got an open circuit.
+[03:16] The pin hasn't been connected.
+[03:17] Hasn't been pushed in fully.
+[03:19] And therefore won't form a circuit.
+[03:22] We've got short circuits.
+[03:23] The wires have been damaged and the insulation have been stripped off.
+[03:26] And we've got a short circuit between two wires.
+[03:28] And we can collect.
+[03:29] Can we can accept splice wires two or three or more more ends.
+[03:34] And fly leads.
+[03:35] And so at the very bottom is a typical screen we would run.
+[03:40] And you'll notice it.
+[03:41] It's this is sitting on a 22 inch screen in front of an operator who's testing.
+[03:46] They don't need to look up.
+[03:47] They can see their peripheral vision either red or green.
+[03:51] And they know there's no mistaking that they didn't read the test set.
+[03:55] So we've we've got certain information about there.
+[03:58] It's it's what is the model our testing so that they know that the test program is correct for the product they're making.
+[04:06] And they can quickly see.
+[04:08] And then in the in the red one where it says error code.
+[04:13] We sequence the wires if you had 10 wires.
+
+
+================================================================================
+COMPLETE AUDIO TRANSCRIPT
+================================================================================
+
+[00:00 - 00:11] So we got started. So Tony Smith is going to join us from us. We're going to.
+[00:11 - 00:14] In real life.
+[00:14 - 00:18] Is it. It haven't been three thirty in the morning.
+[00:18 - 00:21] And I'm not getting up at that time of the morning.
+[00:21 - 00:23] And I guess you guys can hear him. Okay.
+[00:23 - 00:29] Yeah.
+[00:29 - 00:33] So for the benefit of people, I think I've been coming along to the.
+[00:33 - 00:36] I was running up started.
+[00:36 - 00:40] The Raspberry Pi group for about nine years now.
+[00:40 - 00:41] I've.
+[00:41 - 00:44] I first started when I was visiting London about nine years ago.
+[00:44 - 00:48] I came along one night for a.
+[00:48 - 00:49] A pint.
+[00:49 - 00:52] And I have participated by zoom ever since.
+[00:52 - 00:55] Except that are getting up at this time of the year.
+[00:55 - 00:59] It's getting up at three thirty in the morning is a bit.
+[00:59 - 01:00] It's a bit hard.
+[01:00 - 01:03] So anyway, I'm in London. I'm visiting London for a few weeks.
+[01:03 - 01:06] I thought we better come along again.
+[01:06 - 01:09] So I for those who don't know me.
+[01:09 - 01:12] I I worth an a factory in Australia.
+[01:12 - 01:14] As a manufacturer.
+[01:14 - 01:15] We make cable.
+[01:15 - 01:18] We we start off with a raw copper and.
+[01:18 - 01:21] Make cable all the way up to, you know,
+[01:21 - 01:24] a multi core complex hybrid cables, et cetera.
+[01:24 - 01:26] And then turn them into the looms.
+[01:26 - 01:29] Which going to all sorts of appliances.
+[01:29 - 01:31] Caravans, automotive, et cetera.
+[01:31 - 01:36] So we have this problem of of of building a loom.
+[01:36 - 01:38] And then wanting to test it.
+[01:38 - 01:41] So you've got a you've got a half a dozen cables.
+[01:41 - 01:42] Half a dozen cables.
+[01:42 - 01:43] Half a dozen.
+[01:43 - 01:46] You know, half a dozen cables, half a dozen wires.
+[01:46 - 01:48] Some connectors that each end.
+[01:48 - 01:51] And you've got to make sure that.
+[01:51 - 01:54] When you're building thousands of them at a time.
+[01:54 - 01:57] And we've done some of them where we've done not in batches of 10,000.
+[01:57 - 02:02] It's really easy after a while to to make a mistake.
+[02:02 - 02:04] And when you're in mass manufacturing when you make a mistake.
+[02:04 - 02:05] You don't make one.
+[02:05 - 02:07] You make.
+[02:07 - 02:09] A lot.
+[02:09 - 02:12] And so what I'm showing here is a test set.
+[02:12 - 02:15] For testing cables and looms.
+[02:15 - 02:20] Now, a loom can be just a simple, you know, three or four wires connected to each end.
+[02:20 - 02:21] Very straight.
+[02:21 - 02:25] But it could have a T piece at T T connection in it.
+[02:25 - 02:28] It could have a multiple connectors.
+[02:28 - 02:30] It might be connectors on one end.
+[02:30 - 02:34] And the other end might be just bare cut wires that are going to be.
+[02:34 - 02:37] That stripped and then sold it into something.
+[02:37 - 02:39] So we have all these combinations.
+[02:39 - 02:43] So I'm looking at building.
+[02:43 - 02:48] The next generation of a Raspberry Pi controlling.
+[02:48 - 02:51] At a series of IO devices.
+[02:51 - 02:52] And so.
+[02:52 - 03:00] In this presentation, I'm talking about how I've used a pco or pcos.
+[03:00 - 03:01] Okay.
+[03:01 - 03:02] Get up.
+[03:02 - 03:03] Coming up there.
+[03:04 - 03:05] Okay.
+[03:05 - 03:09] So what I'm checking for is swap wise.
+[03:09 - 03:11] The person is assembling it.
+[03:11 - 03:15] Let's put the wrong wire in the wrong hole in the connector into the housing.
+[03:15 - 03:16] We've got an open circuit.
+[03:16 - 03:17] The pin hasn't been connected.
+[03:17 - 03:19] Hasn't been pushed in fully.
+[03:19 - 03:22] And therefore won't form a circuit.
+[03:22 - 03:23] We've got short circuits.
+[03:23 - 03:26] The wires have been damaged and the insulation have been stripped off.
+[03:26 - 03:28] And we've got a short circuit between two wires.
+[03:28 - 03:29] And we can collect.
+[03:29 - 03:34] Can we can accept splice wires two or three or more more ends.
+[03:34 - 03:35] And fly leads.
+[03:35 - 03:40] And so at the very bottom is a typical screen we would run.
+[03:40 - 03:41] And you'll notice it.
+[03:41 - 03:46] It's this is sitting on a 22 inch screen in front of an operator who's testing.
+[03:46 - 03:47] They don't need to look up.
+[03:47 - 03:51] They can see their peripheral vision either red or green.
+[03:51 - 03:55] And they know there's no mistaking that they didn't read the test set.
+[03:55 - 03:58] So we've we've got certain information about there.
+[03:58 - 04:06] It's it's what is the model our testing so that they know that the test program is correct for the product they're making.
+[04:06 - 04:08] And they can quickly see.
+[04:08 - 04:13] And then in the in the red one where it says error code.
+[04:13 - 04:16] We sequence the wires if you had 10 wires.
