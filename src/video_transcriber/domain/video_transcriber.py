@@ -90,6 +90,35 @@ class VideoTranscriber:
                 last_hash = current_hash
                 last_captured_frame = frame.frame_number
 
+    def _extract_and_transcribe_audio(self, video_path: str) -> list[AudioSegment]:
+        """Extract and transcribe audio from video.
+
+        Handles extraction, transcription, error handling, and cleanup of temp files.
+        Returns empty list if extraction or transcription fails.
+
+        Args:
+            video_path: Path to video file
+
+        Returns:
+            List of audio segments with timestamps and text
+        """
+        audio_segments = []
+        audio_path = None
+
+        try:
+            audio_path = self.audio_extractor.extract_audio(video_path)
+            audio_segments = self.audio_transcriber.transcribe_audio(audio_path)
+        except (AudioExtractionError, AudioTranscriptionError):
+            pass  # Return empty list
+        finally:
+            if audio_path and audio_path.startswith(tempfile.gettempdir()):
+                try:
+                    os.remove(audio_path)
+                except (FileNotFoundError, PermissionError):
+                    pass
+
+        return audio_segments
+
     def _merge_audio_with_frames(
         self,
         frames: list[FrameResult],
@@ -153,26 +182,8 @@ class VideoTranscriber:
 
         # Extract and transcribe audio (if requested and adapters available)
         audio_segments = []
-        audio_path = None
         if transcribe_audio and self.audio_extractor and self.audio_transcriber:
-            try:
-                # Extract audio from video
-                audio_path = self.audio_extractor.extract_audio(video_path)
-
-                # Transcribe audio
-                audio_segments = self.audio_transcriber.transcribe_audio(audio_path)
-
-            except (AudioExtractionError, AudioTranscriptionError) as e:
-                # Log warning but continue with visual transcription
-                # In production, you might want proper logging here
-                pass
-            finally:
-                # Clean up temp audio file if it was created
-                if audio_path and audio_path.startswith(tempfile.gettempdir()):
-                    try:
-                        os.remove(audio_path)
-                    except (FileNotFoundError, PermissionError):
-                        pass
+            audio_segments = self._extract_and_transcribe_audio(video_path)
 
         # Extract and transcribe frames
         frames = []
