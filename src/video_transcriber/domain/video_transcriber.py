@@ -7,7 +7,7 @@ import tempfile
 import os
 
 from .models import FrameResult, TranscriptResult, AudioSegment
-from .frame_comparison import compute_frame_hash, frames_similar
+from .frame_selector import FrameSelector
 from ..ports.video_reader import VideoReader
 from ..ports.vision_transcriber import VisionTranscriber
 from ..ports.audio_extractor import AudioExtractor, AudioExtractionError
@@ -56,6 +56,13 @@ class VideoTranscriber:
         self.similarity_threshold = config.similarity_threshold
         self.min_frame_interval = config.min_frame_interval
 
+        # Create frame selector with configured parameters
+        self.frame_selector = FrameSelector(
+            video_reader=ports.video_reader,
+            similarity_threshold=config.similarity_threshold,
+            min_frame_interval=config.min_frame_interval
+        )
+
     def extract_distinct_frames(
         self,
         video_path: str,
@@ -72,32 +79,7 @@ class VideoTranscriber:
         Yields:
             FrameResult objects for each distinct frame
         """
-        last_hash = None
-        last_captured_frame = -self.min_frame_interval
-
-        for frame in self.video_reader.read_frames(video_path, sample_interval):
-            # Compute hash for this frame
-            current_hash = compute_frame_hash(frame.image)
-
-            # Check if frame is sufficiently different
-            is_distinct = False
-            if last_hash is None:
-                is_distinct = True
-            else:
-                similarity = frames_similar(current_hash, last_hash)
-                if similarity < self.similarity_threshold:
-                    if (frame.frame_number - last_captured_frame) >= self.min_frame_interval:
-                        is_distinct = True
-
-            if is_distinct:
-                yield FrameResult(
-                    frame_number=frame.frame_number,
-                    timestamp_seconds=frame.timestamp_seconds,
-                    image=frame.image
-                )
-
-                last_hash = current_hash
-                last_captured_frame = frame.frame_number
+        return self.frame_selector.extract_distinct_frames(video_path, sample_interval)
 
     def _extract_and_transcribe_audio(self, video_path: str) -> list[AudioSegment]:
         """Extract and transcribe audio from video.

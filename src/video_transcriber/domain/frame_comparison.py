@@ -31,14 +31,17 @@ def compute_frame_hash(frame: np.ndarray, hash_size: int = 16) -> np.ndarray:
     return (resized > mean_val).flatten()
 
 
-def frames_similar(hash1: np.ndarray, hash2: np.ndarray) -> float:
+def frames_similar(hash1: np.ndarray | None, hash2: np.ndarray | None) -> float:
     """Compute similarity between two frame hashes.
 
     Args:
-        hash1: First frame hash (boolean array)
-        hash2: Second frame hash (boolean array)
+        hash1: First frame hash (boolean array) or None
+        hash2: Second frame hash (boolean array) or None
 
     Returns:
         Similarity score from 0.0 (completely different) to 1.0 (identical)
+        Returns 0.0 if either hash is None (indicating no previous frame)
     """
+    if hash1 is None or hash2 is None:
+        return 0.0
     return float(np.mean(hash1 == hash2))
