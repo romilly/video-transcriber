@@ -2,6 +2,7 @@
 
 from typing import Optional, Iterator
 from pathlib import Path
+from dataclasses import dataclass
 import tempfile
 import os
 
@@ -11,6 +12,22 @@ from ..ports.video_reader import VideoReader
 from ..ports.vision_transcriber import VisionTranscriber
 from ..ports.audio_extractor import AudioExtractor, AudioExtractionError
 from ..ports.audio_transcriber import AudioTranscriber, AudioTranscriptionError
+
+
+@dataclass
+class TranscriberPorts:
+    """Port implementations for VideoTranscriber dependency injection."""
+    video_reader: VideoReader
+    vision_transcriber: VisionTranscriber
+    audio_extractor: Optional[AudioExtractor] = None
+    audio_transcriber: Optional[AudioTranscriber] = None
+
+
+@dataclass
+class TranscriberConfig:
+    """Configuration settings for VideoTranscriber."""
+    similarity_threshold: float = 0.92
+    min_frame_interval: int = 15
 
 
 class VideoTranscriber:
@@ -23,29 +40,21 @@ class VideoTranscriber:
 
     def __init__(
         self,
-        video_reader: VideoReader,
-        vision_transcriber: VisionTranscriber,
-        audio_extractor: Optional[AudioExtractor] = None,
-        audio_transcriber: Optional[AudioTranscriber] = None,
-        similarity_threshold: float = 0.92,
-        min_frame_interval: int = 15
+        ports: TranscriberPorts,
+        config: TranscriberConfig = TranscriberConfig()
     ):
-        """Initialize the video transcriber with port implementations.
+        """Initialize the video transcriber with port implementations and configuration.
 
         Args:
-            video_reader: Port for reading video files
-            vision_transcriber: Port for transcribing images
-            audio_extractor: Optional port for extracting audio from video
-            audio_transcriber: Optional port for transcribing audio to text
-            similarity_threshold: Frames more similar than this are considered duplicates (0-1)
-            min_frame_interval: Minimum frames between captures (avoids transition frames)
+            ports: Port implementations for dependency injection
+            config: Configuration settings (similarity threshold, frame interval, etc.)
         """
-        self.video_reader = video_reader
-        self.vision_transcriber = vision_transcriber
-        self.audio_extractor = audio_extractor
-        self.audio_transcriber = audio_transcriber
-        self.similarity_threshold = similarity_threshold
-        self.min_frame_interval = min_frame_interval
+        self.video_reader = ports.video_reader
+        self.vision_transcriber = ports.vision_transcriber
+        self.audio_extractor = ports.audio_extractor
+        self.audio_transcriber = ports.audio_transcriber
+        self.similarity_threshold = config.similarity_threshold
+        self.min_frame_interval = config.min_frame_interval
 
     def extract_distinct_frames(
         self,

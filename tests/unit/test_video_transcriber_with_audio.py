@@ -3,7 +3,11 @@
 import numpy as np
 import pytest
 
-from video_transcriber.domain.video_transcriber import VideoTranscriber
+from video_transcriber.domain.video_transcriber import (
+    VideoTranscriber,
+    TranscriberPorts,
+    TranscriberConfig
+)
 from video_transcriber.domain.models import AudioSegment, FrameResult
 from video_transcriber.ports.video_reader import VideoMetadata, Frame
 from video_transcriber.testing.fake_video import FakeVideoReader
@@ -26,12 +30,13 @@ class TestVideoTranscriberWithAudio:
         fake_audio_extractor = FakeAudioExtractor()
         fake_audio_transcriber = FakeAudioTranscriber()
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         assert transcriber.audio_extractor is fake_audio_extractor
         assert transcriber.audio_transcriber is fake_audio_transcriber
@@ -44,11 +49,12 @@ class TestVideoTranscriberWithAudio:
         )
         fake_vision = FakeVisionTranscriber()
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision
             # No audio ports!
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         assert transcriber.audio_extractor is None
         assert transcriber.audio_transcriber is None
@@ -73,12 +79,13 @@ class TestVideoTranscriberWithAudio:
         fake_audio_extractor = FakeAudioExtractor(audio_file_path="/tmp/test_audio.wav")
         fake_audio_transcriber = FakeAudioTranscriber(segments=audio_segments)
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         result = transcriber.process_video("dummy.mp4", sample_interval=1)
 
@@ -105,11 +112,12 @@ class TestVideoTranscriberWithAudio:
         )
         fake_vision = FakeVisionTranscriber(default_response="Slide text")
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision
             # No audio ports!
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         result = transcriber.process_video("dummy.mp4", sample_interval=1)
 
@@ -133,12 +141,13 @@ class TestVideoTranscriberWithAudio:
             segments=[AudioSegment(0.0, 1.0, "This should not appear")]
         )
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         result = transcriber.process_video(
             "dummy.mp4",
@@ -183,14 +192,17 @@ class TestVideoTranscriberWithAudio:
         fake_audio_extractor = FakeAudioExtractor()
         fake_audio_transcriber = FakeAudioTranscriber(segments=audio_segments)
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
-            audio_transcriber=fake_audio_transcriber,
+            audio_transcriber=fake_audio_transcriber
+        )
+        config = TranscriberConfig(
             similarity_threshold=0.51,  # Frames have 50% similarity, need >0.5 threshold
             min_frame_interval=1  # Allow consecutive frames
         )
+        transcriber = VideoTranscriber(ports=ports, config=config)
 
         result = transcriber.process_video("dummy.mp4", sample_interval=1)
 
@@ -222,12 +234,13 @@ class TestVideoTranscriberWithAudio:
         fake_audio_extractor = FakeAudioExtractor(should_fail=True)
         fake_audio_transcriber = FakeAudioTranscriber()
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         # Should not raise exception
         result = transcriber.process_video("dummy.mp4", sample_interval=1)
@@ -249,12 +262,13 @@ class TestVideoTranscriberWithAudio:
         fake_audio_extractor = FakeAudioExtractor()
         fake_audio_transcriber = FakeAudioTranscriber(should_fail=True)
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         # Should not raise exception
         result = transcriber.process_video("dummy.mp4", sample_interval=1)

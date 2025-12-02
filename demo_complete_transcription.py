@@ -21,7 +21,11 @@ from video_transcriber.adapters.opencv_video import OpenCVVideoAdapter
 from video_transcriber.adapters.claude_vision import ClaudeVisionAdapter
 from video_transcriber.adapters.ffmpeg_audio import FFmpegAudioExtractor
 from video_transcriber.adapters.whisper_audio import WhisperAudioTranscriber
-from video_transcriber.domain.video_transcriber import VideoTranscriber
+from video_transcriber.domain.video_transcriber import (
+    VideoTranscriber,
+    TranscriberPorts,
+    TranscriberConfig
+)
 
 
 def save_transcript(result, output_path):
@@ -114,14 +118,17 @@ def main():
     print("✅ Adapters initialized\n")
 
     # Create transcriber with dependency injection
-    transcriber = VideoTranscriber(
+    ports = TranscriberPorts(
         video_reader=video_reader,
         vision_transcriber=vision_transcriber,
         audio_extractor=audio_extractor,
-        audio_transcriber=audio_transcriber,
+        audio_transcriber=audio_transcriber
+    )
+    config = TranscriberConfig(
         similarity_threshold=0.92,
         min_frame_interval=15
     )
+    transcriber = VideoTranscriber(ports=ports, config=config)
 
     # Process video
     print("🎥 Processing video...")

@@ -3,7 +3,11 @@
 import numpy as np
 import pytest
 
-from video_transcriber.domain.video_transcriber import VideoTranscriber
+from video_transcriber.domain.video_transcriber import (
+    VideoTranscriber,
+    TranscriberPorts,
+    TranscriberConfig
+)
 from video_transcriber.domain.models import AudioSegment
 from video_transcriber.ports.video_reader import VideoMetadata, Frame
 from video_transcriber.testing.fake_video import FakeVideoReader
@@ -21,10 +25,11 @@ class TestVideoTranscriberUseCase:
         )
         fake_vision = FakeVisionTranscriber()
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         assert transcriber is not None
 
@@ -46,12 +51,15 @@ class TestVideoTranscriberUseCase:
         )
         fake_vision = FakeVisionTranscriber(default_response="Test transcription")
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
-            vision_transcriber=fake_vision,
+            vision_transcriber=fake_vision
+        )
+        config = TranscriberConfig(
             similarity_threshold=0.51,  # Should keep both frames (they're 50% similar)
             min_frame_interval=1  # Allow consecutive distinct frames
         )
+        transcriber = VideoTranscriber(ports=ports, config=config)
 
         result = transcriber.process_video("dummy.mp4", sample_interval=1)
 
@@ -80,12 +88,15 @@ class TestVideoTranscriberUseCase:
         )
         fake_vision = FakeVisionTranscriber(default_response="Fake transcription")
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
-            vision_transcriber=fake_vision,
+            vision_transcriber=fake_vision
+        )
+        config = TranscriberConfig(
             similarity_threshold=0.98,  # Very high threshold - only nearly identical frames filtered
             min_frame_interval=1  # Allow checking all frames
         )
+        transcriber = VideoTranscriber(ports=ports, config=config)
 
         result = transcriber.process_video("dummy.mp4", sample_interval=1)
 
@@ -102,10 +113,11 @@ class TestVideoTranscriberUseCase:
         )
         fake_vision = FakeVisionTranscriber(default_response="Transcribed content")
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         result = transcriber.process_video("dummy.mp4")
 
@@ -124,10 +136,11 @@ class TestVideoTranscriberUseCase:
         )
         fake_vision = FakeVisionTranscriber()
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         result = transcriber.process_video("dummy.mp4", transcribe_visuals=False)
 
@@ -148,10 +161,11 @@ class TestVideoTranscriberUseCase:
             responses_by_prompt={"Custom OCR prompt": "OCR result"}
         )
 
-        transcriber = VideoTranscriber(
+        ports = TranscriberPorts(
             video_reader=fake_video,
             vision_transcriber=fake_vision
         )
+        transcriber = VideoTranscriber(ports=ports)
 
         result = transcriber.process_video("dummy.mp4", prompt="Custom OCR prompt")
 

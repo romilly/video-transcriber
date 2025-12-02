@@ -13,7 +13,11 @@ from dotenv import load_dotenv
 
 from video_transcriber.adapters.opencv_video import OpenCVVideoAdapter
 from video_transcriber.adapters.claude_vision import ClaudeVisionAdapter
-from video_transcriber.domain.video_transcriber import VideoTranscriber
+from video_transcriber.domain.video_transcriber import (
+    VideoTranscriber,
+    TranscriberPorts,
+    TranscriberConfig
+)
 
 # Load API key from .env
 load_dotenv()
@@ -33,12 +37,15 @@ vision_transcriber = ClaudeVisionAdapter(
 )
 
 # Create transcriber with dependency injection
-transcriber = VideoTranscriber(
+ports = TranscriberPorts(
     video_reader=video_reader,
-    vision_transcriber=vision_transcriber,
+    vision_transcriber=vision_transcriber
+)
+config = TranscriberConfig(
     similarity_threshold=0.92,
     min_frame_interval=15
 )
+transcriber = VideoTranscriber(ports=ports, config=config)
 
 # Process video
 print("Processing video with Claude Haiku...")
