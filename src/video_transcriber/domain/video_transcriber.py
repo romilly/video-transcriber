@@ -119,6 +119,37 @@ class VideoTranscriber:
 
         return audio_segments
 
+    def _extract_and_transcribe_frames(
+        self,
+        video_path: str,
+        sample_interval: int,
+        prompt: str,
+        transcribe_visuals: bool
+    ) -> list[FrameResult]:
+        """Extract distinct frames and optionally transcribe them.
+
+        Uses perceptual hashing to identify distinct frames, then optionally
+        transcribes visual content using the vision model.
+
+        Args:
+            video_path: Path to video file
+            sample_interval: Check every N frames for changes
+            prompt: Prompt for visual transcription
+            transcribe_visuals: Whether to transcribe visuals with vision model
+
+        Returns:
+            List of frame results with optional transcriptions
+        """
+        frames = []
+        for frame_result in self.extract_distinct_frames(video_path, sample_interval):
+            if transcribe_visuals:
+                frame_result.transcription = self.vision_transcriber.transcribe_image(
+                    frame_result.image,
+                    prompt
+                )
+            frames.append(frame_result)
+        return frames
+
     def _merge_audio_with_frames(
         self,
         frames: list[FrameResult],
@@ -186,15 +217,9 @@ class VideoTranscriber:
             audio_segments = self._extract_and_transcribe_audio(video_path)
 
         # Extract and transcribe frames
-        frames = []
-        for frame_result in self.extract_distinct_frames(video_path, sample_interval):
-            if transcribe_visuals:
-                frame_result.transcription = self.vision_transcriber.transcribe_image(
-                    frame_result.image,
-                    prompt
-                )
-
-            frames.append(frame_result)
+        frames = self._extract_and_transcribe_frames(
+            video_path, sample_interval, prompt, transcribe_visuals
+        )
 
         # Merge audio with frames based on timestamps
         frames = self._merge_audio_with_frames(frames, audio_segments)
