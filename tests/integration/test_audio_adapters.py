@@ -18,7 +18,7 @@ from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
 
 
 # Test video path - cp-demo.mp4 has no audio, we'll need a different one
-TEST_VIDEO_WITH_AUDIO = Path(__file__).parent.parent.parent / "data" / "test_with_audio.mp4"
+TEST_VIDEO_WITH_AUDIO = Path(__file__).parent.parent.parent / "data" / "tony.mp4"
 
 # Skip if ffmpeg not installed
 try:

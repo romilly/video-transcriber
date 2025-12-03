@@ -5,7 +5,6 @@ import pytest
 from video_transcriber.testing.fake_audio import FakeAudioExtractor, FakeAudioTranscriber
 from video_transcriber.ports.audio_extractor import AudioExtractionError
 from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
-from video_transcriber.domain.models import AudioSegment
 
 
 class TestFakeAudioExtractor:
@@ -72,11 +71,7 @@ class TestFakeAudioTranscriber:
 
     def test_returns_configured_segments(self):
         """FakeAudioTranscriber returns pre-configured segments."""
-        segments = [
-            AudioSegment(0.0, 5.0, "Hello world"),
-            AudioSegment(5.0, 10.0, "This is a test")
-        ]
-        fake = FakeAudioTranscriber(segments=segments)
+        fake = FakeAudioTranscriber.build(5.0, "Hello world", "This is a test")
 
         result = fake.transcribe_audio("/tmp/audio.wav")
 

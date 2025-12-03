@@ -73,6 +73,29 @@ class FakeAudioTranscriber:
         self.call_count = 0
         self.last_audio_path = None
 
+    @classmethod
+    def build(cls, segment_duration, *texts: list[str]):
+        """Build a FakeAudioTranscriber from a list of text strings.
+
+        Args:
+            texts: List of text strings for each audio segment
+            segment_duration: Duration of each segment in seconds (default: 2.0)
+
+        Returns:
+            FakeAudioTranscriber with sequential audio segments
+        """
+        segments = []
+        current_time = 0.0
+        for text in texts:
+            segment = AudioSegment(
+                start_seconds=current_time,
+                end_seconds=current_time + segment_duration,
+                text=text
+            )
+            segments.append(segment)
+            current_time += segment_duration
+        return cls(segments=segments)
+
     def transcribe_audio(self, audio_path: str) -> list[AudioSegment]:
         """Return configured segments without actual transcription.
 
