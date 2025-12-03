@@ -38,12 +38,14 @@ class FrameSelector:
 
     def _is_frame_distinct(self) -> bool:
         """Check if current frame is sufficiently different from last captured frame."""
-        return self._differ_enough() and self._interval_is_enough()
+        return self._frames_differ_enough() and self._frame_interval_is_enough()
 
-    def _interval_is_enough(self):
+    def _frame_interval_is_enough(self):
+        """Check if enough frames have passed since the last capture."""
         return  (self.current_frame_number - self.last_captured_frame_number) >= self.min_frame_interval
 
-    def _differ_enough(self) -> bool:
+    def _frames_differ_enough(self) -> bool:
+        """Check if similarity is below threshold (frames are distinct)."""
         return frames_similar(self.current_hash, self.last_hash) < self.similarity_threshold
 
     def extract_distinct_frames(
