@@ -1,6 +1,6 @@
 """Frame selection logic for identifying distinct frames in video."""
 
-from typing import Iterator, Optional
+from typing import Iterator
 
 from .models import FrameResult
 from ..ports.video_reader import VideoReader, Frame
@@ -30,13 +30,11 @@ class FrameSelector:
 
     def _reset_state(self):
         """Initialize/reset state fields for frame extraction."""
-        self.current_frame: Optional[Frame] = None
-        self.last_captured_frame: Optional[Frame] = None
+        self.current_frame: Frame = Frame.initial_frame()
+        self.last_captured_frame: Frame = Frame.initial_frame()
 
     def _is_frame_distinct(self) -> bool:
         """Check if current frame is sufficiently different from last captured frame."""
-        if self.last_captured_frame is None:
-            return True  # First frame is always distinct
         return self._frames_differ_enough() and self._frame_interval_is_enough()
 
     def _frame_interval_is_enough(self):

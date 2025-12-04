@@ -20,11 +20,26 @@ class Frame:
     """A single video frame with metadata."""
     frame_number: int
     timestamp_seconds: float
-    image: np.ndarray  # BGR format (OpenCV convention)
+    image: np.ndarray | None  # BGR format (OpenCV convention), or None for initial frame
     _hash: Optional[np.ndarray] = None  # Cached perceptual hash
 
-    def get_hash(self) -> np.ndarray:
+    @classmethod
+    def initial_frame(cls) -> 'Frame':
+        """Create an initial frame for bootstrapping frame comparison.
+
+        Returns a frame with None image, a very large negative frame number,
+        and the smallest possible timestamp. This eliminates the need for None checks.
+        """
+        return cls(
+            frame_number=-999999,
+            timestamp_seconds=float('-inf'),
+            image=None
+        )
+
+    def get_hash(self) -> np.ndarray | None:
         """Get perceptual hash for this frame, computing and caching if needed."""
+        if self.image is None:
+            return None
         if self._hash is None:
             from ..domain.frame_comparison import compute_frame_hash
             self._hash = compute_frame_hash(self.image)
@@ -41,6 +56,8 @@ class Frame:
         """
         my_hash = self.get_hash()
         other_hash = other.get_hash()
+        if my_hash is None or other_hash is None:
+            return 0.0
         return float(np.mean(my_hash == other_hash))
 
     def frame_interval_to(self, other: 'Frame') -> int:
