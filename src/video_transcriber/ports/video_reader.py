@@ -1,5 +1,6 @@
 """Port for reading video files and extracting frames."""
 
+import sys
 from dataclasses import dataclass
 from typing import Protocol, Iterator, Optional
 import cv2
@@ -123,13 +124,15 @@ class VideoReader(Protocol):
     def read_frames(
         self,
         video_path: str,
-        sample_interval: int = 1
+        sample_interval: int = 1,
+        limit: int = sys.maxsize
     ) -> Iterator[Frame]:
         """Read frames from video at specified intervals.
 
         Args:
             video_path: Path to video file
             sample_interval: Read every Nth frame (1 = every frame)
+            limit: Maximum number of frames to yield (default: unlimited)
 
         Yields:
             Frame objects with frame number, timestamp, and image

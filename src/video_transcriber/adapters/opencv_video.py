@@ -1,5 +1,6 @@
 """OpenCV-based video reading adapter."""
 
+import sys
 import cv2
 from typing import Iterator
 
@@ -49,13 +50,15 @@ class OpenCVVideoAdapter:
     def read_frames(
         self,
         video_path: str,
-        sample_interval: int = 1
+        sample_interval: int = 1,
+        limit: int = sys.maxsize
     ) -> Iterator[Frame]:
         """Read frames from video using OpenCV.
 
         Args:
             video_path: Path to video file
             sample_interval: Read every Nth frame (1 = every frame)
+            limit: Maximum number of frames to yield (default: unlimited)
 
         Yields:
             Frame objects with frame number, timestamp, and image
@@ -71,6 +74,7 @@ class OpenCVVideoAdapter:
         try:
             fps = cap.get(cv2.CAP_PROP_FPS)
             frame_count = 0
+            yielded_count = 0
 
             while True:
                 ret, image = cap.read()
@@ -89,5 +93,9 @@ class OpenCVVideoAdapter:
                         timestamp_seconds=timestamp,
                         image=image.copy()
                     )
+
+                    yielded_count += 1
+                    if yielded_count >= limit:
+                        break
         finally:
             cap.release()

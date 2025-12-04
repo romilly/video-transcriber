@@ -39,10 +39,11 @@ class TestOpenCVVideoAdapter:
         """OpenCVVideoAdapter can read frames from video."""
         adapter = OpenCVVideoAdapter()
 
-        frames = list(adapter.read_frames(str(TEST_VIDEO), sample_interval=30))
+        frames = list(adapter.read_frames(str(TEST_VIDEO), sample_interval=30, limit=10))
 
         # Should yield at least some frames
         assert len(frames) > 0
+        assert len(frames) <= 10  # Should respect limit
 
         # Check first frame properties
         first_frame = frames[0]
@@ -57,15 +58,18 @@ class TestOpenCVVideoAdapter:
         """OpenCVVideoAdapter respects the sample_interval parameter."""
         adapter = OpenCVVideoAdapter()
 
-        # Read with different intervals
-        frames_all = list(adapter.read_frames(str(TEST_VIDEO), sample_interval=1))
-        frames_sampled = list(adapter.read_frames(str(TEST_VIDEO), sample_interval=10))
+        # Read with different intervals to show sampling effect
+        # Keep limits low for fast tests
+        frames_all = list(adapter.read_frames(str(TEST_VIDEO), sample_interval=1, limit=20))
+        frames_sampled = list(adapter.read_frames(str(TEST_VIDEO), sample_interval=10, limit=2))
 
-        # Sampled should have fewer frames
-        assert len(frames_sampled) < len(frames_all)
-        # Roughly 1/10th as many (allowing for rounding)
-        ratio = len(frames_all) / len(frames_sampled)
-        assert 8 <= ratio <= 12  # Allow some tolerance
+        # Should respect the limits
+        assert len(frames_all) == 20
+        assert len(frames_sampled) == 2
+        # Verify sampling: frames_sampled should be every 10th frame
+        # So frame numbers should be 10, 20
+        assert frames_sampled[0].frame_number == 10
+        assert frames_sampled[1].frame_number == 20
 
     def test_raises_error_for_nonexistent_file(self):
         """OpenCVVideoAdapter raises error for nonexistent video file."""
