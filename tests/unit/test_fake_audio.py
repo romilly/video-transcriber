@@ -6,7 +6,6 @@ from video_transcriber.testing.fake_audio import FakeAudioExtractor, FakeAudioTr
 from video_transcriber.ports.audio_extractor import AudioExtractionError
 from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
 
-
 class TestFakeAudioExtractor:
     """Tests for FakeAudioExtractor test double."""
 

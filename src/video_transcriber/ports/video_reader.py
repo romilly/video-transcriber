@@ -1,7 +1,7 @@
 """Port for reading video files and extracting frames."""
 
 from dataclasses import dataclass
-from typing import Protocol, Iterator
+from typing import Protocol, Iterator, Optional
 import numpy as np
 
 
@@ -21,6 +21,38 @@ class Frame:
     frame_number: int
     timestamp_seconds: float
     image: np.ndarray  # BGR format (OpenCV convention)
+    _hash: Optional[np.ndarray] = None  # Cached perceptual hash
+
+    def get_hash(self) -> np.ndarray:
+        """Get perceptual hash for this frame, computing and caching if needed."""
+        if self._hash is None:
+            from ..domain.frame_comparison import compute_frame_hash
+            self._hash = compute_frame_hash(self.image)
+        return self._hash
+
+    def similarity_to(self, other: 'Frame') -> float:
+        """Compute similarity to another frame.
+
+        Args:
+            other: The frame to compare to
+
+        Returns:
+            Similarity score from 0.0 (completely different) to 1.0 (identical)
+        """
+        my_hash = self.get_hash()
+        other_hash = other.get_hash()
+        return float(np.mean(my_hash == other_hash))
+
+    def frame_interval_to(self, other: 'Frame') -> int:
+        """Calculate the number of frames between this frame and another.
+
+        Args:
+            other: The frame to compare to
+
+        Returns:
+            Absolute difference in frame numbers
+        """
+        return abs(self.frame_number - other.frame_number)
 
 
 class VideoReader(Protocol):

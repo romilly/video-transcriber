@@ -1,10 +1,9 @@
 """Frame selection logic for identifying distinct frames in video."""
 
-from typing import Iterator
+from typing import Iterator, Optional
 
 from .models import FrameResult
-from .frame_comparison import compute_frame_hash, frames_similar
-from ..ports.video_reader import VideoReader
+from ..ports.video_reader import VideoReader, Frame
 
 
 class FrameSelector:
@@ -31,22 +30,22 @@ class FrameSelector:
 
     def _reset_state(self):
         """Initialize/reset state fields for frame extraction."""
-        self.current_hash = None
-        self.current_frame_number = None
-        self.last_hash = None
-        self.last_captured_frame_number = -self.min_frame_interval
+        self.current_frame: Optional[Frame] = None
+        self.last_captured_frame: Optional[Frame] = None
 
     def _is_frame_distinct(self) -> bool:
         """Check if current frame is sufficiently different from last captured frame."""
+        if self.last_captured_frame is None:
+            return True  # First frame is always distinct
         return self._frames_differ_enough() and self._frame_interval_is_enough()
 
     def _frame_interval_is_enough(self):
         """Check if enough frames have passed since the last capture."""
-        return  (self.current_frame_number - self.last_captured_frame_number) >= self.min_frame_interval
+        return self.current_frame.frame_interval_to(self.last_captured_frame) >= self.min_frame_interval
 
     def _frames_differ_enough(self) -> bool:
         """Check if similarity is below threshold (frames are distinct)."""
-        return frames_similar(self.current_hash, self.last_hash) < self.similarity_threshold
+        return self.current_frame.similarity_to(self.last_captured_frame) < self.similarity_threshold
 
     def extract_distinct_frames(
         self,
@@ -67,9 +66,7 @@ class FrameSelector:
         self._reset_state()
 
         for frame in self.video_reader.read_frames(video_path, sample_interval):
-            # Compute hash for this frame
-            self.current_hash = compute_frame_hash(frame.image)
-            self.current_frame_number = frame.frame_number
+            self.current_frame = frame
 
             # Check if frame is sufficiently different
             if self._is_frame_distinct():
@@ -79,5 +76,4 @@ class FrameSelector:
                     image=frame.image
                 )
 
-                self.last_hash = self.current_hash
-                self.last_captured_frame_number = self.current_frame_number
+                self.last_captured_frame = self.current_frame

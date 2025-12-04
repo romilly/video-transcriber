@@ -47,6 +47,9 @@ The `VideoTranscriber` class (currently in notebook) handles:
 ### TDD Workflow Commands
 
 ```bash
+# Activate virtual environment first (required)
+source venv/bin/activate
+
 # Install package in editable mode (required for development)
 pip install -e .
 
@@ -89,6 +92,9 @@ pytest -k "test_name_pattern" -v
 ## Installation & Setup
 
 ```bash
+# Activate virtual environment (required before running any commands)
+source venv/bin/activate
+
 # Install package in editable mode
 pip install -e .
 
