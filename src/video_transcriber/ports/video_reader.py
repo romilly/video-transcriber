@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 from typing import Protocol, Iterator, Optional
+import cv2
 import numpy as np
 
 
@@ -36,13 +37,39 @@ class Frame:
             image=None
         )
 
+    @staticmethod
+    def _compute_hash(image: np.ndarray, hash_size: int = 16) -> np.ndarray:
+        """Compute a perceptual hash for change detection.
+
+        Uses average hash - fast and effective for slide detection.
+        The hash is based on whether each pixel in a downsampled grayscale
+        version of the frame is above or below the mean value.
+
+        Args:
+            image: Input frame as numpy array (BGR format)
+            hash_size: Size of hash grid (default 16x16 = 256 bits)
+
+        Returns:
+            Boolean array representing the perceptual hash
+        """
+        # Convert to grayscale
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # Resize to hash_size x hash_size
+        resized = cv2.resize(gray, (hash_size, hash_size), interpolation=cv2.INTER_AREA)
+
+        # Compare each pixel to mean value
+        mean_val = resized.mean()
+
+        # Return flattened boolean array
+        return (resized > mean_val).flatten()
+
     def get_hash(self) -> np.ndarray | None:
         """Get perceptual hash for this frame, computing and caching if needed."""
         if self.image is None:
             return None
         if self._hash is None:
-            from ..domain.frame_comparison import compute_frame_hash
-            self._hash = compute_frame_hash(self.image)
+            self._hash = Frame._compute_hash(self.image)
         return self._hash
 
     def similarity_to(self, other: 'Frame') -> float:
