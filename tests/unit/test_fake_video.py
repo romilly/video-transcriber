@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from video_transcriber.testing.fake_video import FakeVideoReader
+from tests.helpers.fake_video import FakeVideoReader
 from video_transcriber.ports.video_reader import VideoMetadata, Frame
 
 

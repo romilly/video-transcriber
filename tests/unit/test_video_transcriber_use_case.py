@@ -10,8 +10,8 @@ from video_transcriber.domain.video_transcriber import (
 )
 from video_transcriber.domain.models import AudioSegment
 from video_transcriber.ports.video_reader import VideoMetadata, Frame
-from video_transcriber.testing.fake_video import FakeVideoReader
-from video_transcriber.testing.fake_vision import FakeVisionTranscriber
+from tests.helpers.fake_video import FakeVideoReader
+from tests.helpers.fake_vision import FakeVisionTranscriber
 
 
 class TestVideoTranscriberUseCase:

@@ -2,7 +2,7 @@
 
 import pytest
 
-from video_transcriber.testing.fake_audio import FakeAudioExtractor, FakeAudioTranscriber
+from tests.helpers.fake_audio import FakeAudioExtractor, FakeAudioTranscriber
 from video_transcriber.ports.audio_extractor import AudioExtractionError
 from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
 

@@ -10,9 +10,9 @@ from video_transcriber.domain.video_transcriber import (
 )
 from video_transcriber.domain.models import AudioSegment, FrameResult
 from video_transcriber.ports.video_reader import VideoMetadata, Frame
-from video_transcriber.testing.fake_video import FakeVideoReader
-from video_transcriber.testing.fake_vision import FakeVisionTranscriber
-from video_transcriber.testing.fake_audio import FakeAudioExtractor, FakeAudioTranscriber
+from tests.helpers.fake_video import FakeVideoReader
+from tests.helpers.fake_vision import FakeVisionTranscriber
+from tests.helpers.fake_audio import FakeAudioExtractor, FakeAudioTranscriber
 from video_transcriber.ports.audio_extractor import AudioExtractionError
 from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
 

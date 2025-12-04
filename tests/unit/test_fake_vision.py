@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from video_transcriber.testing.fake_vision import FakeVisionTranscriber
+from tests.helpers.fake_vision import FakeVisionTranscriber
 
 
 class TestFakeVisionTranscriber:
