@@ -26,24 +26,6 @@ class FrameSelector:
         self.video_reader = video_reader
         self.similarity_threshold = similarity_threshold
         self.min_frame_interval = min_frame_interval
-        self._reset_state()
-
-    def _reset_state(self):
-        """Initialize/reset state fields for frame extraction."""
-        self.current_frame: Frame = Frame.initial_frame()
-        self.last_captured_frame: Frame = Frame.initial_frame()
-
-    def _is_frame_distinct(self) -> bool:
-        """Check if current frame is sufficiently different from last captured frame."""
-        return self._frames_differ_enough() and self._frame_interval_is_enough()
-
-    def _frame_interval_is_enough(self):
-        """Check if enough frames have passed since the last capture."""
-        return self.current_frame.frame_interval_to(self.last_captured_frame) >= self.min_frame_interval
-
-    def _frames_differ_enough(self) -> bool:
-        """Check if similarity is below threshold (frames are distinct)."""
-        return self.current_frame.similarity_to(self.last_captured_frame) < self.similarity_threshold
 
     def extract_distinct_frames(
         self,
@@ -61,17 +43,18 @@ class FrameSelector:
         Yields:
             FrameResult objects for each distinct frame
         """
-        self._reset_state()
+        last_captured_frame = Frame.initial_frame()
 
-        for frame in self.video_reader.read_frames(video_path, sample_interval):
-            self.current_frame = frame
-
+        for current_frame in self.video_reader.read_frames(video_path, sample_interval):
             # Check if frame is sufficiently different
-            if self._is_frame_distinct():
+            frames_differ_enough = current_frame.similarity_to(last_captured_frame) < self.similarity_threshold
+            frame_interval_is_enough = current_frame.frame_interval_to(last_captured_frame) >= self.min_frame_interval
+
+            if frames_differ_enough and frame_interval_is_enough:
                 yield FrameResult(
-                    frame_number=frame.frame_number,
-                    timestamp_seconds=frame.timestamp_seconds,
-                    image=frame.image
+                    frame_number=current_frame.frame_number,
+                    timestamp_seconds=current_frame.timestamp_seconds,
+                    image=current_frame.image
                 )
 
-                self.last_captured_frame = self.current_frame
+                last_captured_frame = current_frame
