@@ -17,8 +17,9 @@ from video_transcriber.ports.audio_extractor import AudioExtractionError
 from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
 
 
-# Test video path - cp-demo.mp4 has no audio, we'll need a different one
+# Test video paths
 TEST_VIDEO_WITH_AUDIO = Path(__file__).parent.parent.parent / "data" / "tony.mp4"
+TEST_VIDEO_SHORT = Path(__file__).parent.parent.parent / "data" / "tony-short.mp4"  # 10 seconds for faster tests
 
 # Skip if ffmpeg not installed
 try:
@@ -103,12 +104,12 @@ class TestWhisperAudioTranscriber:
     """Integration tests for Whisper audio transcription."""
 
     @pytest.mark.skipif(not FFMPEG_AVAILABLE, reason="ffmpeg not installed")
-    @pytest.mark.skipif(not TEST_VIDEO_WITH_AUDIO.exists(), reason="Test video not available")
+    @pytest.mark.skipif(not TEST_VIDEO_SHORT.exists(), reason="Test video not available")
     def test_transcribes_audio_with_timestamps(self):
         """WhisperAudioTranscriber transcribes audio and returns segments."""
-        # First extract audio
+        # First extract audio (using short video for faster tests)
         extractor = FFmpegAudioExtractor()
-        audio_path = extractor.extract_audio(str(TEST_VIDEO_WITH_AUDIO))
+        audio_path = extractor.extract_audio(str(TEST_VIDEO_SHORT))
 
         try:
             # Then transcribe
@@ -132,11 +133,11 @@ class TestWhisperAudioTranscriber:
             Path(audio_path).unlink()
 
     @pytest.mark.skipif(not FFMPEG_AVAILABLE, reason="ffmpeg not installed")
-    @pytest.mark.skipif(not TEST_VIDEO_WITH_AUDIO.exists(), reason="Test video not available")
+    @pytest.mark.skipif(not TEST_VIDEO_SHORT.exists(), reason="Test video not available")
     def test_respects_model_size_parameter(self):
         """WhisperAudioTranscriber can use different model sizes."""
         extractor = FFmpegAudioExtractor()
-        audio_path = extractor.extract_audio(str(TEST_VIDEO_WITH_AUDIO))
+        audio_path = extractor.extract_audio(str(TEST_VIDEO_SHORT))
 
         try:
             # Use tiny model (fastest)
