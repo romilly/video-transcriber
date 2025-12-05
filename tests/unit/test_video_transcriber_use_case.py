@@ -33,6 +33,7 @@ class TestVideoTranscriberUseCase:
     def test_extracts_distinct_frames_using_video_reader(self):
         """VideoTranscriber uses VideoReader to extract frames."""
         # Create frames with different patterns (left/right, top/bottom)
+        #TODO: create these as fixtures.
         frame1 = np.zeros((100, 100, 3), dtype=np.uint8)
         frame1[:, 50:] = 255  # Left black, right white
 
@@ -64,6 +65,7 @@ class TestVideoTranscriberUseCase:
     def test_filters_similar_frames(self):
         """VideoTranscriber filters out frames that are too similar."""
         # Create 3 frames: different, similar to first, very different
+        #TODO: use fixtures
         frame1_img = np.zeros((100, 100, 3), dtype=np.uint8)
         frame1_img[:, 50:] = 255  # Left black, right white
 

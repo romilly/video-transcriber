@@ -94,6 +94,7 @@ class TestZipMarkdownReportGenerator:
     def test_generates_temp_zip_if_no_output_path(self, sample_transcript_result):
         """Test that generator creates a zip in temp directory if no path provided."""
         # Given: A TranscriptResult and no output path
+        #TODO: why do we eend this?
         generator = ZipMarkdownReportGenerator()
 
         # When: Generate zip report without output path

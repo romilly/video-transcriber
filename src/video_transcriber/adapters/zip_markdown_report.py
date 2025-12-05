@@ -46,6 +46,7 @@ class ZipMarkdownReportGenerator:
         return output_path
 
     def _encode_image(self, image: np.ndarray) -> bytes:
+        #TODO: move to Frame
         """
         Encode numpy image array as PNG bytes.
 
