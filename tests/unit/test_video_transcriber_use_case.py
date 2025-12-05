@@ -13,6 +13,30 @@ from video_transcriber.ports.video_reader import VideoMetadata, Frame
 from tests.helpers.fake_video import FakeVideoReader
 
 
+@pytest.fixture
+def left_right_split_image():
+    """Create a frame with black left half, white right half."""
+    frame = np.zeros((100, 100, 3), dtype=np.uint8)
+    frame[:, 50:] = 255  # Left black, right white
+    return frame
+
+
+@pytest.fixture
+def top_bottom_split_image():
+    """Create a frame with black top half, white bottom half."""
+    frame = np.zeros((100, 100, 3), dtype=np.uint8)
+    frame[50:, :] = 255  # Top black, bottom white
+    return frame
+
+
+@pytest.fixture
+def almost_left_right_split_image():
+    """Create a frame almost identical to left_right_split (254 instead of 255)."""
+    frame = np.zeros((100, 100, 3), dtype=np.uint8)
+    frame[:, 50:] = 254  # Almost identical to left_right_split
+    return frame
+
+
 class TestVideoTranscriberUseCase:
     """Tests for VideoTranscriber core use case logic."""
 
@@ -30,18 +54,10 @@ class TestVideoTranscriberUseCase:
 
         assert transcriber is not None
 
-    def test_extracts_distinct_frames_using_video_reader(self):
+    def test_extracts_distinct_frames_using_video_reader(self, left_right_split_image, top_bottom_split_image):
         """VideoTranscriber uses VideoReader to extract frames."""
-        # Create frames with different patterns (left/right, top/bottom)
-        #TODO: create these as fixtures.
-        frame1 = np.zeros((100, 100, 3), dtype=np.uint8)
-        frame1[:, 50:] = 255  # Left black, right white
-
-        frame2 = np.zeros((100, 100, 3), dtype=np.uint8)
-        frame2[50:, :] = 255  # Top black, bottom white
-
-        frame1_obj = Frame(0, 0.0, frame1)
-        frame2_obj = Frame(50, 1.67, frame2)  # Far enough apart for min_frame_interval
+        frame1_obj = Frame(0, 0.0, left_right_split_image)
+        frame2_obj = Frame(50, 1.67, top_bottom_split_image)  # Far enough apart for min_frame_interval
 
         fake_video = FakeVideoReader(
             metadata=VideoMetadata(640, 480, 30.0, 60, 2.0),
@@ -62,22 +78,12 @@ class TestVideoTranscriberUseCase:
         # Should have extracted both distinct frames
         assert len(result.frames) == 2
 
-    def test_filters_similar_frames(self):
+    def test_filters_similar_frames(self, left_right_split_image, almost_left_right_split_image, top_bottom_split_image):
         """VideoTranscriber filters out frames that are too similar."""
         # Create 3 frames: different, similar to first, very different
-        #TODO: use fixtures
-        frame1_img = np.zeros((100, 100, 3), dtype=np.uint8)
-        frame1_img[:, 50:] = 255  # Left black, right white
-
-        frame2_img = np.zeros((100, 100, 3), dtype=np.uint8)
-        frame2_img[:, 50:] = 254  # Almost identical to frame1 (254 instead of 255)
-
-        frame3_img = np.zeros((100, 100, 3), dtype=np.uint8)
-        frame3_img[50:, :] = 255  # Top black, bottom white - very different pattern
-
-        frame1 = Frame(0, 0.0, frame1_img)
-        frame2 = Frame(10, 0.33, frame2_img)  # Similar to frame1
-        frame3 = Frame(60, 2.0, frame3_img)  # Different
+        frame1 = Frame(0, 0.0, left_right_split_image)
+        frame2 = Frame(10, 0.33, almost_left_right_split_image)  # Similar to frame1
+        frame3 = Frame(60, 2.0, top_bottom_split_image)  # Different
 
         fake_video = FakeVideoReader(
             metadata=VideoMetadata(640, 480, 30.0, 90, 3.0),
