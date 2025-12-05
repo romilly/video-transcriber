@@ -91,29 +91,6 @@ class TestZipMarkdownReportGenerator:
             assert "Hello everyone" in markdown_content
             assert "Today we'll be discussing" in markdown_content
 
-    def test_generates_temp_zip_if_no_output_path(self, sample_transcript_result):
-        """Test that generator creates a zip in temp directory if no path provided."""
-        # Given: A TranscriptResult and no output path
-        #TODO: why do we eend this?
-        generator = ZipMarkdownReportGenerator()
-
-        # When: Generate zip report without output path
-        result_path = generator.generate(sample_transcript_result)
-
-        try:
-            # Then: Zip file exists in temp directory
-            assert os.path.exists(result_path)
-            assert result_path.endswith(".zip")
-            assert tempfile.gettempdir() in result_path
-
-            # And: Zip is valid
-            with zipfile.ZipFile(result_path, 'r') as zf:
-                assert "transcript.md" in zf.namelist()
-        finally:
-            # Cleanup
-            if os.path.exists(result_path):
-                os.remove(result_path)
-
     def test_handles_empty_frames(self, temp_output_dir):
         """Test that generator handles TranscriptResult with no frames."""
         # Given: A TranscriptResult with no frames

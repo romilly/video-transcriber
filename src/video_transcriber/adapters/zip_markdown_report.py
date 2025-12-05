@@ -1,9 +1,6 @@
 """Zip Markdown Report Generator - creates zip files with markdown transcripts and images."""
 import io
-import os
-import tempfile
 import zipfile
-from typing import Optional
 
 import cv2
 import numpy as np
@@ -15,22 +12,17 @@ from video_transcriber.domain.models import TranscriptResult
 class ZipMarkdownReportGenerator:
     """Generates a zip file containing markdown transcript and frame images."""
 
-    def generate(self, result: TranscriptResult, output_path: Optional[str] = None) -> str:
+    def generate(self, result: TranscriptResult, output_path: str) -> str:
         """
         Generate a zip file containing markdown transcript and frame images.
 
         Args:
             result: The TranscriptResult containing frames and audio segments
-            output_path: Optional path for the output zip file. If None, creates in temp directory.
+            output_path: Path for the output zip file
 
         Returns:
             str: Path to the generated zip file
         """
-        # Create temp zip if no output path provided
-        if output_path is None:
-            fd, output_path = tempfile.mkstemp(suffix=".zip")
-            os.close(fd)
-
         # Create zip file
         with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zf:
             # Save frame images
