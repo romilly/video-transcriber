@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from video_transcriber.domain.models import AudioSegment, FrameResult, TranscriptResult
+from video_transcriber.domain.models import AudioSegment, Frame, FrameResult, TranscriptResult
 from video_transcriber.adapters.zip_markdown_report import ZipMarkdownReportGenerator
 
 
@@ -24,20 +24,26 @@ class TestZipMarkdownReportGenerator:
     def sample_transcript_result(self):
         """Create a sample TranscriptResult with frames and audio."""
         # Create sample frames with audio segments
-        frame1 = FrameResult(
+        frame1_obj = Frame(
             frame_number=0,
             timestamp_seconds=0.0,
-            image=np.zeros((100, 100, 3), dtype=np.uint8),
+            image=np.zeros((100, 100, 3), dtype=np.uint8)
+        )
+        frame1 = FrameResult(
+            frame=frame1_obj,
             audio_segments=[
                 AudioSegment(0.0, 3.5, "Hello everyone, welcome to today's presentation."),
                 AudioSegment(3.5, 7.0, "Today we'll be discussing video transcription."),
             ]
         )
 
-        frame2 = FrameResult(
+        frame2_obj = Frame(
             frame_number=30,
             timestamp_seconds=10.0,
-            image=np.ones((100, 100, 3), dtype=np.uint8) * 128,
+            image=np.ones((100, 100, 3), dtype=np.uint8) * 128
+        )
+        frame2 = FrameResult(
+            frame=frame2_obj,
             audio_segments=[
                 AudioSegment(10.0, 15.0, "Let's start with the key concepts."),
             ]

@@ -51,10 +51,6 @@ class FrameSelector:
             frame_interval_is_enough = current_frame.frame_interval_to(last_captured_frame) >= self.min_frame_interval
 
             if frames_differ_enough and frame_interval_is_enough:
-                yield FrameResult(
-                    frame_number=current_frame.frame_number,
-                    timestamp_seconds=current_frame.timestamp_seconds,
-                    image=current_frame.image
-                )
+                yield FrameResult(frame=current_frame)
 
                 last_captured_frame = current_frame

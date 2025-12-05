@@ -1,10 +1,5 @@
 """Zip Markdown Report Generator - creates zip files with markdown transcripts and images."""
-import io
 import zipfile
-
-import cv2
-import numpy as np
-from PIL import Image
 
 from video_transcriber.domain.models import TranscriptResult
 
@@ -28,7 +23,7 @@ class ZipMarkdownReportGenerator:
             # Save frame images
             for i, frame in enumerate(result.frames):
                 image_filename = f"img/frame_{i:03d}.png"
-                image_bytes = self._encode_image(frame.image)
+                image_bytes = frame.to_png_bytes()
                 zf.writestr(image_filename, image_bytes)
 
             # Generate and save markdown
@@ -36,29 +31,6 @@ class ZipMarkdownReportGenerator:
             zf.writestr("transcript.md", markdown.encode('utf-8'))
 
         return output_path
-
-    def _encode_image(self, image: np.ndarray) -> bytes:
-        #TODO: move to Frame
-        """
-        Encode numpy image array as PNG bytes.
-
-        Args:
-            image: Numpy array representing the image (BGR or RGB format)
-
-        Returns:
-            bytes: PNG-encoded image data
-        """
-        # Convert BGR to RGB (OpenCV uses BGR by default)
-        if len(image.shape) == 3 and image.shape[2] == 3:
-            image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-        else:
-            image_rgb = image
-
-        # Convert to PIL Image and encode as PNG
-        pil_image = Image.fromarray(image_rgb)
-        buffer = io.BytesIO()
-        pil_image.save(buffer, format="PNG")
-        return buffer.getvalue()
 
     def _generate_markdown(self, result: TranscriptResult) -> str:
         """
