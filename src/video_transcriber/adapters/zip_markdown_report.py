@@ -93,10 +93,6 @@ class ZipMarkdownReportGenerator:
             # Image link
             lines.append(f"![Slide {i + 1}](img/frame_{i:03d}.png)\n")
 
-            # Visual transcription
-            if frame.transcription:
-                lines.append(f"**Visual:** {frame.transcription}\n")
-
             # Audio segments associated with this frame
             if frame.audio_segments:
                 lines.append("**Audio:**\n")

@@ -28,7 +28,6 @@ class TestZipMarkdownReportGenerator:
             frame_number=0,
             timestamp_seconds=0.0,
             image=np.zeros((100, 100, 3), dtype=np.uint8),
-            transcription="Welcome to the presentation",
             audio_segments=[
                 AudioSegment(0.0, 3.5, "Hello everyone, welcome to today's presentation."),
                 AudioSegment(3.5, 7.0, "Today we'll be discussing video transcription."),
@@ -39,7 +38,6 @@ class TestZipMarkdownReportGenerator:
             frame_number=30,
             timestamp_seconds=10.0,
             image=np.ones((100, 100, 3), dtype=np.uint8) * 128,
-            transcription="Key concepts",
             audio_segments=[
                 AudioSegment(10.0, 15.0, "Let's start with the key concepts."),
             ]
@@ -88,9 +86,6 @@ class TestZipMarkdownReportGenerator:
             # Check for image links
             assert "![" in markdown_content
             assert "img/frame_000.png" in markdown_content
-
-            # Check for visual transcription
-            assert "Welcome to the presentation" in markdown_content
 
             # Check for audio transcription
             assert "Hello everyone" in markdown_content

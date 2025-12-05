@@ -15,11 +15,10 @@ class AudioSegment:
 
 @dataclass
 class FrameResult:
-    """Holds a frame and its transcription."""
+    """Holds a frame with timestamp and audio segments."""
     frame_number: int
     timestamp_seconds: float
     image: np.ndarray
-    transcription: Optional[str] = None
     audio_segments: list[AudioSegment] = field(default_factory=list)
 
 
