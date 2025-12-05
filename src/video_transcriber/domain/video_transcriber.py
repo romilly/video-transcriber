@@ -9,7 +9,6 @@ import os
 from .models import FrameResult, TranscriptResult, AudioSegment
 from .frame_selector import FrameSelector
 from ..ports.video_reader import VideoReader
-from ..ports.vision_transcriber import VisionTranscriber
 from ..ports.audio_extractor import AudioExtractor, AudioExtractionError
 from ..ports.audio_transcriber import AudioTranscriber, AudioTranscriptionError
 
@@ -18,7 +17,6 @@ from ..ports.audio_transcriber import AudioTranscriber, AudioTranscriptionError
 class TranscriberPorts:
     """Port implementations for VideoTranscriber dependency injection."""
     video_reader: VideoReader
-    vision_transcriber: VisionTranscriber
     audio_extractor: Optional[AudioExtractor] = None
     audio_transcriber: Optional[AudioTranscriber] = None
 
@@ -50,7 +48,6 @@ class VideoTranscriber:
             config: Configuration settings (similarity threshold, frame interval, etc.)
         """
         self.video_reader = ports.video_reader
-        self.vision_transcriber = ports.vision_transcriber
         self.audio_extractor = ports.audio_extractor
         self.audio_transcriber = ports.audio_transcriber
         self.similarity_threshold = config.similarity_threshold
@@ -113,31 +110,21 @@ class VideoTranscriber:
     def _extract_and_transcribe_frames(
         self,
         video_path: str,
-        sample_interval: int,
-        prompt: str,
-        transcribe_visuals: bool
+        sample_interval: int
     ) -> list[FrameResult]:
-        """Extract distinct frames and optionally transcribe them.
+        """Extract distinct frames from video.
 
-        Uses perceptual hashing to identify distinct frames, then optionally
-        transcribes visual content using the vision model.
+        Uses perceptual hashing to identify distinct frames.
 
         Args:
             video_path: Path to video file
             sample_interval: Check every N frames for changes
-            prompt: Prompt for visual transcription
-            transcribe_visuals: Whether to transcribe visuals with vision model
 
         Returns:
-            List of frame results with optional transcriptions
+            List of frame results
         """
         frames = []
         for frame_result in self.extract_distinct_frames(video_path, sample_interval):
-            if transcribe_visuals:
-                frame_result.transcription = self.vision_transcriber.transcribe_image(
-                    frame_result.image,
-                    prompt
-                )
             frames.append(frame_result)
         return frames
 
@@ -182,34 +169,26 @@ class VideoTranscriber:
         self,
         video_path: str,
         sample_interval: int = 30,
-        prompt: Optional[str] = None,
-        transcribe_visuals: bool = True,
         transcribe_audio: bool = True
     ) -> TranscriptResult:
-        """Process entire video: extract frames, transcribe visuals and audio.
+        """Process entire video: extract frames and transcribe audio.
 
         Args:
             video_path: Path to video file
             sample_interval: Check every N frames for changes
-            prompt: Custom prompt for visual transcription
-            transcribe_visuals: Whether to transcribe visuals with vision model
             transcribe_audio: Whether to transcribe audio (requires audio ports)
 
         Returns:
             TranscriptResult with frames and audio segments
         """
-        # Default prompt if not specified
-        if prompt is None:
-            prompt = "Transcribe all text visible in this presentation slide. Include headings, bullet points, and any other text. Format it clearly."
-
         # Extract and transcribe audio (if requested and adapters available)
         audio_segments = []
         if transcribe_audio and self.audio_extractor and self.audio_transcriber:
             audio_segments = self._extract_and_transcribe_audio(video_path)
 
-        # Extract and transcribe frames
+        # Extract frames
         frames = self._extract_and_transcribe_frames(
-            video_path, sample_interval, prompt, transcribe_visuals
+            video_path, sample_interval
         )
 
         # Merge audio with frames based on timestamps

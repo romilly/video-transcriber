@@ -9,7 +9,6 @@ import pytest
 from video_transcriber.domain.models import TranscriptResult, FrameResult, AudioSegment
 from video_transcriber.ports.video_reader import VideoMetadata, Frame
 from tests.helpers.fake_video import FakeVideoReader
-from tests.helpers.fake_vision import FakeVisionTranscriber
 from tests.helpers.fake_audio import FakeAudioExtractor, FakeAudioTranscriber
 from video_transcriber.domain.video_transcriber import VideoTranscriber, TranscriberPorts, TranscriberConfig
 from video_transcriber.generators.markdown_generator import MarkdownGenerator
@@ -44,13 +43,11 @@ class TestMarkdownGenerator:
         """MarkdownGenerator creates a zip file in the specified output directory."""
         # Arrange: Create a fake VideoTranscriber with audio segments
         video_reader = fake_video_reader
-        vision_transcriber = FakeVisionTranscriber(default_response="Test slide")
         audio_extractor = FakeAudioExtractor(audio_file_path="/tmp/test_audio.wav")
         audio_transcriber = fake_audio_transcriber
 
         ports = TranscriberPorts(
             video_reader=video_reader,
-            vision_transcriber=vision_transcriber,
             audio_extractor=audio_extractor,
             audio_transcriber=audio_transcriber
         )

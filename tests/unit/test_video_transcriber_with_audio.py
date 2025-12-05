@@ -11,7 +11,6 @@ from video_transcriber.domain.video_transcriber import (
 from video_transcriber.domain.models import AudioSegment, FrameResult
 from video_transcriber.ports.video_reader import VideoMetadata, Frame
 from tests.helpers.fake_video import FakeVideoReader
-from tests.helpers.fake_vision import FakeVisionTranscriber
 from tests.helpers.fake_audio import FakeAudioExtractor, FakeAudioTranscriber
 from video_transcriber.ports.audio_extractor import AudioExtractionError
 from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
@@ -26,13 +25,11 @@ class TestVideoTranscriberWithAudio:
             metadata=VideoMetadata(640, 480, 30.0, 900, 30.0),
             frames=[]
         )
-        fake_vision = FakeVisionTranscriber()
         fake_audio_extractor = FakeAudioExtractor()
         fake_audio_transcriber = FakeAudioTranscriber()
 
         ports = TranscriberPorts(
             video_reader=fake_video,
-            vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
@@ -47,11 +44,9 @@ class TestVideoTranscriberWithAudio:
             metadata=VideoMetadata(640, 480, 30.0, 900, 30.0),
             frames=[]
         )
-        fake_vision = FakeVisionTranscriber()
 
         ports = TranscriberPorts(
-            video_reader=fake_video,
-            vision_transcriber=fake_vision
+            video_reader=fake_video
             # No audio ports!
         )
         transcriber = VideoTranscriber(ports=ports)
@@ -69,7 +64,6 @@ class TestVideoTranscriberWithAudio:
             metadata=VideoMetadata(640, 480, 30.0, 60, 2.0),
             frames=[frame1, frame2]
         )
-        fake_vision = FakeVisionTranscriber(default_response="Slide text")
 
         # Setup audio
         audio_segments = [
@@ -81,7 +75,6 @@ class TestVideoTranscriberWithAudio:
 
         ports = TranscriberPorts(
             video_reader=fake_video,
-            vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
@@ -102,31 +95,6 @@ class TestVideoTranscriberWithAudio:
         assert result.audio_segments[0].text == "Hello world"
         assert result.audio_segments[1].text == "This is a test"
 
-    def test_process_video_without_audio_ports_still_works(self):
-        """VideoTranscriber without audio ports works as before (backward compatible)."""
-        frame1 = Frame(0, 0.0, np.zeros((100, 100, 3), dtype=np.uint8))
-
-        fake_video = FakeVideoReader(
-            metadata=VideoMetadata(640, 480, 30.0, 30, 1.0),
-            frames=[frame1]
-        )
-        fake_vision = FakeVisionTranscriber(default_response="Slide text")
-
-        ports = TranscriberPorts(
-            video_reader=fake_video,
-            vision_transcriber=fake_vision
-            # No audio ports!
-        )
-        transcriber = VideoTranscriber(ports=ports)
-
-        result = transcriber.process_video("dummy.mp4", sample_interval=1)
-
-        # Should still work
-        assert len(result.frames) == 1
-        assert result.frames[0].transcription == "Slide text"
-        # No audio segments
-        assert len(result.audio_segments) == 0
-
     def test_can_skip_audio_transcription_with_flag(self):
         """VideoTranscriber can skip audio even when audio ports available."""
         frame1 = Frame(0, 0.0, np.zeros((100, 100, 3), dtype=np.uint8))
@@ -135,7 +103,6 @@ class TestVideoTranscriberWithAudio:
             metadata=VideoMetadata(640, 480, 30.0, 30, 1.0),
             frames=[frame1]
         )
-        fake_vision = FakeVisionTranscriber(default_response="Slide text")
         fake_audio_extractor = FakeAudioExtractor()
         fake_audio_transcriber = FakeAudioTranscriber(
             segments=[AudioSegment(0.0, 1.0, "This should not appear")]
@@ -143,7 +110,6 @@ class TestVideoTranscriberWithAudio:
 
         ports = TranscriberPorts(
             video_reader=fake_video,
-            vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
@@ -180,7 +146,6 @@ class TestVideoTranscriberWithAudio:
             metadata=VideoMetadata(640, 480, 30.0, 900, 30.0),
             frames=[frame1, frame2, frame3]
         )
-        fake_vision = FakeVisionTranscriber(default_response="Slide")
 
         # Create audio segments at various timestamps
         audio_segments = [
@@ -194,7 +159,6 @@ class TestVideoTranscriberWithAudio:
 
         ports = TranscriberPorts(
             video_reader=fake_video,
-            vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
@@ -230,13 +194,11 @@ class TestVideoTranscriberWithAudio:
             metadata=VideoMetadata(640, 480, 30.0, 30, 1.0),
             frames=[frame1]
         )
-        fake_vision = FakeVisionTranscriber(default_response="Slide text")
         fake_audio_extractor = FakeAudioExtractor(should_fail=True)
         fake_audio_transcriber = FakeAudioTranscriber()
 
         ports = TranscriberPorts(
             video_reader=fake_video,
-            vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
@@ -258,13 +220,11 @@ class TestVideoTranscriberWithAudio:
             metadata=VideoMetadata(640, 480, 30.0, 30, 1.0),
             frames=[frame1]
         )
-        fake_vision = FakeVisionTranscriber(default_response="Slide text")
         fake_audio_extractor = FakeAudioExtractor()
         fake_audio_transcriber = FakeAudioTranscriber(should_fail=True)
 
         ports = TranscriberPorts(
             video_reader=fake_video,
-            vision_transcriber=fake_vision,
             audio_extractor=fake_audio_extractor,
             audio_transcriber=fake_audio_transcriber
         )
