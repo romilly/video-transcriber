@@ -4,10 +4,9 @@ numpy
 requests
 pillow
 faster-whisper
-anthropic>=0.39.0
-python-dotenv>=1.0.0
+python-dotenv
 
 # Development dependencies (install with pip install -e .[test])
 pytest>=7.0.0
 notebook
-# pytest-cov
+pytest-cov

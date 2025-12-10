@@ -1,6 +1,7 @@
 # video-transcriber
 
-Extracts visually distinct frames from videos and transcribes audio using Whisper. Creates a portable zip file containing a markdown transcript with embedded slide images.
+Extracts visually distinct frames from videos and transcribes audio using Whisper.
+Creates a portable zip file containing a markdown transcript with slide images in the img sub-directory.
 
 ## Features
 
@@ -62,4 +63,5 @@ zip_path = transcribe_video(
 ```bash
 pip install -e .[test]
 pytest
+#  pytest --cov=video_transcriber if you want coverage (currently 89%)
 ```

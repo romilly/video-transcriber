@@ -9,8 +9,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Core Architecture
 
 ### Current State
-- **notebooks/spike.ipynb** - Contains the working `VideoTranscriber` class implementation (spike/prototype code)
-- **src/video_transcriber/** - Package structure exists but is mostly empty; code needs to be moved from notebook
 - **tests/** - Test structure exists with `data/` and `output/` subdirectories
 
 ### Key Components

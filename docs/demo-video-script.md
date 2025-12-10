@@ -31,7 +31,7 @@
 > - Get a text transcript for accessibility or notes
 > - Match what was said to each slide
 >
-> Doing this manually is tedious. Video-transcriber automates the entire process.
+> Doing this by hand is slow, boring, and error-prone. Video-transcriber automates the entire process.
 
 ---
 
