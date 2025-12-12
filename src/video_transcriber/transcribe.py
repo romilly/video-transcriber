@@ -13,7 +13,8 @@ def transcribe_video(
     video_path: str,
     output_dir: str,
     model_size: str = "base",
-    sample_interval: int = 30
+    sample_interval: int = 30,
+    include_timestamps: bool = False
 ) -> str:
     """Transcribe a video and generate a zip file with markdown and frame images.
 
@@ -23,6 +24,8 @@ def transcribe_video(
         model_size: Whisper model size (tiny, base, small, medium, large-v3).
                    Default is "base".
         sample_interval: Check for new frames every N frames. Default is 30.
+        include_timestamps: Whether to include timestamps in the markdown output.
+                          Default is False.
 
     Returns:
         Path to the generated zip file.
@@ -50,7 +53,7 @@ def transcribe_video(
     result = transcriber.process_video(str(video_path), sample_interval=sample_interval)
 
     # Generate zip file
-    generator = ZipMarkdownReportGenerator()
+    generator = ZipMarkdownReportGenerator(include_timestamps=include_timestamps)
     zip_path = generator.generate(result, output_path=str(output_zip))
 
     return zip_path

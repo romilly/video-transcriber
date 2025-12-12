@@ -74,8 +74,8 @@ class TestZipMarkdownReportGenerator:
 
     def test_markdown_contains_timeline_merged_content(self, temp_output_dir, sample_transcript_result):
         """Test that markdown contains frames with their associated audio segments."""
-        # Given: A TranscriptResult with frames and audio
-        generator = ZipMarkdownReportGenerator()
+        # Given: A TranscriptResult with frames and audio, timestamps enabled
+        generator = ZipMarkdownReportGenerator(include_timestamps=True)
         output_path = os.path.join(temp_output_dir, "report.zip")
 
         # When: Generate zip report
@@ -113,3 +113,43 @@ class TestZipMarkdownReportGenerator:
             assert "transcript.md" in zf.namelist()
             markdown_content = zf.read("transcript.md").decode('utf-8')
             assert len(markdown_content) > 0  # Should have at least a title or message
+
+    def test_excludes_timestamps_by_default(self, temp_output_dir, sample_transcript_result):
+        """Test that timestamps are excluded from markdown by default."""
+        # Given: A TranscriptResult and default generator settings
+        generator = ZipMarkdownReportGenerator()
+        output_path = os.path.join(temp_output_dir, "report.zip")
+
+        # When: Generate zip report
+        generator.generate(sample_transcript_result, output_path=output_path)
+
+        # Then: Markdown does NOT contain timestamps
+        with zipfile.ZipFile(output_path, 'r') as zf:
+            markdown_content = zf.read("transcript.md").decode('utf-8')
+
+            # Slide headers should NOT have timestamps
+            assert "## Slide 1\n" in markdown_content
+            assert "(0:00)" not in markdown_content
+
+            # Audio segments should NOT have timestamp prefixes
+            assert "Hello everyone" in markdown_content
+            assert "[0:00 - " not in markdown_content
+
+    def test_includes_timestamps_when_enabled(self, temp_output_dir, sample_transcript_result):
+        """Test that timestamps are included when include_timestamps=True."""
+        # Given: A TranscriptResult and generator with timestamps enabled
+        generator = ZipMarkdownReportGenerator(include_timestamps=True)
+        output_path = os.path.join(temp_output_dir, "report.zip")
+
+        # When: Generate zip report
+        generator.generate(sample_transcript_result, output_path=output_path)
+
+        # Then: Markdown contains timestamps
+        with zipfile.ZipFile(output_path, 'r') as zf:
+            markdown_content = zf.read("transcript.md").decode('utf-8')
+
+            # Slide headers should have timestamps
+            assert "(0:00)" in markdown_content
+
+            # Audio segments should have timestamp prefixes
+            assert "[0:00 - 0:03]" in markdown_content or "[0:00 - 3:30]" in markdown_content

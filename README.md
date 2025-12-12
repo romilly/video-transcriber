@@ -88,8 +88,9 @@ output/my-presentation_transcript.zip
 zip_path = transcribe_video(
     "my-presentation.mp4",
     "output/",
-    model_size="large-v3",  # Whisper model: tiny, base, small, medium, large-v3
-    sample_interval=15      # Check for new slides every N frames (default: 30)
+    model_size="large-v3",     # Whisper model: tiny, base, small, medium, large-v3
+    sample_interval=15,        # Check for new slides every N frames (default: 30)
+    include_timestamps=True    # Include timestamps in markdown output (default: False)
 )
 ```
 

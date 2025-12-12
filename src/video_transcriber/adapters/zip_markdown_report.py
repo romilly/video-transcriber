@@ -7,6 +7,16 @@ from video_transcriber.domain.models import TranscriptResult
 class ZipMarkdownReportGenerator:
     """Generates a zip file containing markdown transcript and frame images."""
 
+    def __init__(self, include_timestamps: bool = False):
+        """
+        Initialize the report generator.
+
+        Args:
+            include_timestamps: Whether to include timestamps in the markdown output.
+                              Defaults to False (timestamps excluded).
+        """
+        self.include_timestamps = include_timestamps
+
     def generate(self, result: TranscriptResult, output_path: str) -> str:
         """
         Generate a zip file containing markdown transcript and frame images.
@@ -51,9 +61,12 @@ class ZipMarkdownReportGenerator:
             return "\n".join(lines)
 
         for i, frame in enumerate(result.frames):
-            # Frame header with timestamp
-            timestamp = self._format_timestamp(frame.timestamp_seconds)
-            lines.append(f"## Slide {i + 1} ({timestamp})\n")
+            # Frame header with optional timestamp
+            if self.include_timestamps:
+                timestamp = self._format_timestamp(frame.timestamp_seconds)
+                lines.append(f"## Slide {i + 1} ({timestamp})\n")
+            else:
+                lines.append(f"## Slide {i + 1}\n")
 
             # Image link
             lines.append(f"![Slide {i + 1}](img/frame_{i:03d}.png)\n")
@@ -62,9 +75,12 @@ class ZipMarkdownReportGenerator:
             if frame.audio_segments:
                 lines.append("**Audio:**\n")
                 for seg in frame.audio_segments:
-                    start = self._format_timestamp(seg.start_seconds)
-                    end = self._format_timestamp(seg.end_seconds)
-                    lines.append(f"- [{start} - {end}] {seg.text}\n")
+                    if self.include_timestamps:
+                        start = self._format_timestamp(seg.start_seconds)
+                        end = self._format_timestamp(seg.end_seconds)
+                        lines.append(f"- [{start} - {end}] {seg.text}\n")
+                    else:
+                        lines.append(f"- {seg.text}\n")
 
             lines.append("")  # Blank line between slides
 
