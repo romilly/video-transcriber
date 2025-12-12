@@ -26,10 +26,45 @@ brew install ffmpeg
 ## Installation
 
 ```bash
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# Install the package
 pip install -e .
 ```
 
+### Hugging Face Token (Optional)
+
+The first time you run the transcriber, it downloads Whisper models from Hugging Face. You may see this warning:
+
+```
+Warning: You are sending unauthenticated requests to the HF Hub.
+```
+
+This is harmless - everything still works. To get faster downloads and higher rate limits, you can set up a free Hugging Face token:
+
+1. Create an account at https://huggingface.co
+2. Go to Settings → Access Tokens → Create new token (read access is sufficient)
+3. Set the environment variable:
+
+```bash
+export HF_TOKEN=your_token_here
+```
+
+To make it permanent, add that line to `~/.bashrc` or `~/.profile`.
+
 ## Usage
+
+Activate the virtual environment and run from the `src` directory:
+
+```bash
+source venv/bin/activate
+cd src
+python -c "from video_transcriber.transcribe import transcribe_video; transcribe_video('my-presentation.mp4', 'output/')"
+```
+
+Or in Python, running in the src directory:
 
 ```python
 from video_transcriber.transcribe import transcribe_video
