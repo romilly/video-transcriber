@@ -96,8 +96,10 @@ class VideoTranscriber:
         try:
             audio_path = self.audio_extractor.extract_audio(video_path)
             audio_segments = self.audio_transcriber.transcribe_audio(audio_path)
-        except (AudioExtractionError, AudioTranscriptionError):
-            pass  # Return empty list
+        except AudioExtractionError as e:
+            print(f"Warning: Audio extraction failed: {e}")
+        except AudioTranscriptionError as e:
+            print(f"Warning: Audio transcription failed: {e}")
         finally:
             if audio_path and audio_path.startswith(tempfile.gettempdir()):
                 try:
