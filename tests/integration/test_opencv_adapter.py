@@ -11,8 +11,8 @@ from video_transcriber.adapters.opencv_video import OpenCVVideoAdapter
 from video_transcriber.ports.video_reader import VideoReadError
 
 
-# Path to test video file (using data/cp-demo.mp4 from project root)
-TEST_VIDEO = Path(__file__).parent.parent.parent / "data" / "cp-demo.mp4"
+# Path to test video file
+TEST_VIDEO = Path(__file__).parent.parent / "data" / "demo.mp4"
 
 
 class TestOpenCVVideoAdapter:

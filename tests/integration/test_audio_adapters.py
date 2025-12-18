@@ -16,9 +16,8 @@ from video_transcriber.ports.audio_extractor import AudioExtractionError
 from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
 
 
-# Test video paths
-TEST_VIDEO_WITH_AUDIO = Path(__file__).parent.parent.parent / "data" / "tony.mp4"
-TEST_VIDEO_SHORT = Path(__file__).parent.parent.parent / "data" / "tony-short.mp4"  # 10 seconds for faster tests
+# Test video path
+TEST_VIDEO = Path(__file__).parent.parent / "data" / "demo.mp4"
 
 
 class TestFFmpegAudioExtractor:
@@ -32,7 +31,7 @@ class TestFFmpegAudioExtractor:
             output_path = Path(tmpdir) / "output.wav"
 
             result = extractor.extract_audio(
-                str(TEST_VIDEO_WITH_AUDIO),
+                str(TEST_VIDEO),
                 output_path=str(output_path)
             )
 
@@ -47,7 +46,7 @@ class TestFFmpegAudioExtractor:
         """FFmpegAudioExtractor creates temp file if output_path is None."""
         extractor = FFmpegAudioExtractor()
 
-        result = extractor.extract_audio(str(TEST_VIDEO_WITH_AUDIO))
+        result = extractor.extract_audio(str(TEST_VIDEO))
 
         # Should return a path
         assert result is not None
@@ -74,7 +73,7 @@ class TestFFmpegAudioExtractor:
             output_path = Path(tmpdir) / "output.wav"
 
             result = extractor.extract_audio(
-                str(TEST_VIDEO_WITH_AUDIO),
+                str(TEST_VIDEO),
                 output_path=str(output_path)
             )
 
@@ -91,7 +90,7 @@ class TestWhisperAudioTranscriber:
         """WhisperAudioTranscriber transcribes audio and returns segments."""
         # First extract audio (using short video for faster tests)
         extractor = FFmpegAudioExtractor()
-        audio_path = extractor.extract_audio(str(TEST_VIDEO_SHORT))
+        audio_path = extractor.extract_audio(str(TEST_VIDEO))
 
         try:
             # Then transcribe
@@ -117,7 +116,7 @@ class TestWhisperAudioTranscriber:
     def test_respects_model_size_parameter(self):
         """WhisperAudioTranscriber can use different model sizes."""
         extractor = FFmpegAudioExtractor()
-        audio_path = extractor.extract_audio(str(TEST_VIDEO_SHORT))
+        audio_path = extractor.extract_audio(str(TEST_VIDEO))
 
         try:
             # Use tiny model (fastest)
