@@ -1,6 +1,6 @@
 """Video Transcriber - A Python project following TDD principles."""
 
-__version__ = "0.1.1"
+__version__ = "0.2.0"
 
 from video_transcriber.transcribe import transcribe_video
 

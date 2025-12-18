@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "video-transcriber"
-version = "0.1.1"
+version = "0.2.0"
 description = "A Python project following TDD principles"
 authors = [{name = "Romilly Cocking", email = "romilly.cocking@gmail.com"}]
 license = "MIT"
@@ -36,9 +36,9 @@ test = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/username/video-transcriber"
-Repository = "https://github.com/username/video-transcriber.git"
-Issues = "https://github.com/username/video-transcriber/issues"
+Homepage = "https://github.com/romilly/video-transcriber"
+Repository = "https://github.com/romilly/video-transcriber.git"
+Issues = "https://github.com/romilly/video-transcriber/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

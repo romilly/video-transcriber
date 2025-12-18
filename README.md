@@ -21,17 +21,17 @@ apt install ffmpeg
 
 # macOS
 brew install ffmpeg
+
+# Windows (using winget)
+winget install ffmpeg
 ```
 
 ## Installation
 
 ```bash
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate
-
-# Install the package
-pip install -e .
+uv venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+uv pip install video-transcriber
 ```
 
 ### Hugging Face
@@ -53,23 +53,12 @@ To get faster downloads and higher rate limits, you can set up a free Hugging Fa
 3. Set the environment variable:
 
 ```bash
-export HF_TOKEN=your_token_here
+export HF_TOKEN=your_token_here  # On Windows: set HF_TOKEN=your_token_here
 ```
 
-To make it permanent, add that line to `~/.bashrc` or `~/.profile`.
+To make it permanent, add that line to `~/.bashrc` or `~/.profile` (on Windows, set it as a system environment variable).
 
 ## Usage
-
-### Quick Demo
-
-Run the demo script to process the included test video:
-
-```bash
-source venv/bin/activate
-python demo_create_zip.py
-```
-
-This processes `tests/data/demo.mp4` and creates `tests/data/generated/demo.zip`.
 
 ### Python API
 
@@ -104,7 +93,20 @@ zip_path = transcribe_video(
 ## Development
 
 ```bash
+git clone https://github.com/romilly/video-transcriber.git
+cd video-transcriber
+python -m venv venv
+source venv/bin/activate
 pip install -e .[test]
 pytest
-#  pytest --cov=video_transcriber if you want coverage (currently 89%)
 ```
+
+### Quick Demo
+
+Run the demo script to process the included test video:
+
+```bash
+python demo_create_zip.py
+```
+
+This processes `tests/data/demo.mp4` and creates `tests/data/generated/demo.zip`.
