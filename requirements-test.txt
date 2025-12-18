@@ -1,0 +1,7 @@
+# Test/development dependencies
+# Install with: pip install -r requirements-test.txt
+-r requirements.txt
+pytest>=7.0.0
+pytest-cov
+notebook
+build

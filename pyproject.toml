@@ -4,29 +4,35 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "video-transcriber"
-version = "0.1.0"
+version = "0.1.1"
 description = "A Python project following TDD principles"
 authors = [{name = "Romilly Cocking", email = "romilly.cocking@gmail.com"}]
-license = {text = "MIT"}
+license = "MIT"
 readme = "README.md"
 requires-python = ">=3.8"
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Intended Audience :: Developers", 
-    "License :: OSI Approved :: MIT License",
+    "Intended Audience :: Developers",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9", 
+    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
 ]
-dependencies = []
+dependencies = [
+    "opencv-python",
+    "numpy",
+    "Pillow",
+    "faster-whisper"
+]
 
 [project.optional-dependencies]
 test = [
     "pytest>=7.0.0",
     "pytest-cov",
+    "notebook",
+    "build",
 ]
 
 [project.urls]

@@ -1,12 +1,5 @@
 # Production dependencies
 opencv-python
 numpy
-requests
 pillow
 faster-whisper
-python-dotenv
-
-# Development dependencies (install with pip install -e .[test])
-pytest>=7.0.0
-notebook
-pytest-cov

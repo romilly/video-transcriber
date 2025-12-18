@@ -34,15 +34,19 @@ source venv/bin/activate
 pip install -e .
 ```
 
-### Hugging Face Token (Optional)
+### Hugging Face
 
-The first time you run the transcriber, it downloads Whisper models from Hugging Face. You may see this warning:
+The first time you run the transcriber, it downloads Whisper models from Hugging Face.
+This may take several minutes.
+
+You may see this warning:
 
 ```
 Warning: You are sending unauthenticated requests to the HF Hub.
 ```
 
-This is harmless - everything still works. To get faster downloads and higher rate limits, you can set up a free Hugging Face token:
+This is harmless. Everything will still work.
+To get faster downloads and higher rate limits, you can set up a free Hugging Face token _before the installation_:
 
 1. Create an account at https://huggingface.co
 2. Go to Settings → Access Tokens → Create new token (read access is sufficient)
@@ -58,13 +62,7 @@ To make it permanent, add that line to `~/.bashrc` or `~/.profile`.
 
 Activate the virtual environment and run from the `src` directory:
 
-```bash
-source venv/bin/activate
-cd src
-python -c "from video_transcriber.transcribe import transcribe_video; transcribe_video('my-presentation.mp4', 'output/')"
-```
-
-Or in Python, running in the src directory:
+In Python, running in the src directory:
 
 ```python
 from video_transcriber.transcribe import transcribe_video
