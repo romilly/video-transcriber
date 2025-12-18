@@ -7,7 +7,6 @@ These tests require:
 """
 
 import pytest
-import os
 import tempfile
 from pathlib import Path
 
@@ -21,20 +20,10 @@ from video_transcriber.ports.audio_transcriber import AudioTranscriptionError
 TEST_VIDEO_WITH_AUDIO = Path(__file__).parent.parent.parent / "data" / "tony.mp4"
 TEST_VIDEO_SHORT = Path(__file__).parent.parent.parent / "data" / "tony-short.mp4"  # 10 seconds for faster tests
 
-# Skip if ffmpeg not installed
-try:
-    import subprocess
-    result = subprocess.run(["ffmpeg", "-version"], capture_output=True)
-    FFMPEG_AVAILABLE = result.returncode == 0
-except (FileNotFoundError, subprocess.SubprocessError):
-    FFMPEG_AVAILABLE = False
-
 
 class TestFFmpegAudioExtractor:
     """Integration tests for FFmpeg audio extraction."""
 
-    @pytest.mark.skipif(not FFMPEG_AVAILABLE, reason="ffmpeg not installed")
-    @pytest.mark.skipif(not TEST_VIDEO_WITH_AUDIO.exists(), reason="Test video not available")
     def test_extracts_audio_from_video(self):
         """FFmpegAudioExtractor extracts audio to WAV format."""
         extractor = FFmpegAudioExtractor()
@@ -54,8 +43,6 @@ class TestFFmpegAudioExtractor:
             # File should have content
             assert output_path.stat().st_size > 0
 
-    @pytest.mark.skipif(not FFMPEG_AVAILABLE, reason="ffmpeg not installed")
-    @pytest.mark.skipif(not TEST_VIDEO_WITH_AUDIO.exists(), reason="Test video not available")
     def test_uses_temporary_file_if_no_output_path(self):
         """FFmpegAudioExtractor creates temp file if output_path is None."""
         extractor = FFmpegAudioExtractor()
@@ -72,7 +59,6 @@ class TestFFmpegAudioExtractor:
         # Clean up
         Path(result).unlink()
 
-    @pytest.mark.skipif(not FFMPEG_AVAILABLE, reason="ffmpeg not installed")
     def test_raises_error_for_invalid_video(self):
         """FFmpegAudioExtractor raises error for nonexistent video."""
         extractor = FFmpegAudioExtractor()
@@ -80,8 +66,6 @@ class TestFFmpegAudioExtractor:
         with pytest.raises(AudioExtractionError):
             extractor.extract_audio("nonexistent_video.mp4")
 
-    @pytest.mark.skipif(not FFMPEG_AVAILABLE, reason="ffmpeg not installed")
-    @pytest.mark.skipif(not TEST_VIDEO_WITH_AUDIO.exists(), reason="Test video not available")
     def test_respects_sample_rate_parameter(self):
         """FFmpegAudioExtractor respects custom sample rate."""
         extractor = FFmpegAudioExtractor(sample_rate=8000)
@@ -103,8 +87,6 @@ class TestFFmpegAudioExtractor:
 class TestWhisperAudioTranscriber:
     """Integration tests for Whisper audio transcription."""
 
-    @pytest.mark.skipif(not FFMPEG_AVAILABLE, reason="ffmpeg not installed")
-    @pytest.mark.skipif(not TEST_VIDEO_SHORT.exists(), reason="Test video not available")
     def test_transcribes_audio_with_timestamps(self):
         """WhisperAudioTranscriber transcribes audio and returns segments."""
         # First extract audio (using short video for faster tests)
@@ -132,8 +114,6 @@ class TestWhisperAudioTranscriber:
             # Clean up
             Path(audio_path).unlink()
 
-    @pytest.mark.skipif(not FFMPEG_AVAILABLE, reason="ffmpeg not installed")
-    @pytest.mark.skipif(not TEST_VIDEO_SHORT.exists(), reason="Test video not available")
     def test_respects_model_size_parameter(self):
         """WhisperAudioTranscriber can use different model sizes."""
         extractor = FFmpegAudioExtractor()

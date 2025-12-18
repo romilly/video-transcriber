@@ -15,7 +15,6 @@ from video_transcriber.ports.video_reader import VideoReadError
 TEST_VIDEO = Path(__file__).parent.parent.parent / "data" / "cp-demo.mp4"
 
 
-@pytest.mark.skipif(not TEST_VIDEO.exists(), reason="Test video not available")
 class TestOpenCVVideoAdapter:
     """Integration tests for OpenCV video adapter."""
 

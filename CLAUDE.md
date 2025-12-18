@@ -72,6 +72,7 @@ pytest -k "test_name_pattern" -v
 - **One test per commit** - keeps git history clean and focused
 - **Test file naming**: `test_[feature_name].py`
 - **Test method naming**: `test_[specific_behavior]`
+- **Never skip tests due to configuration issues** - if test data files or dependencies are missing, tests should fail, not skip. Skipped tests hide problems.
 
 ## Testing Structure
 
