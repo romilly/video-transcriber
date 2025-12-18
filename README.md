@@ -60,9 +60,18 @@ To make it permanent, add that line to `~/.bashrc` or `~/.profile`.
 
 ## Usage
 
-Activate the virtual environment and run from the `src` directory:
+### Quick Demo
 
-In Python, running in the src directory:
+Run the demo script to process the included test video:
+
+```bash
+source venv/bin/activate
+python demo_create_zip.py
+```
+
+This processes `tests/data/demo.mp4` and creates `tests/data/generated/demo.zip`.
+
+### Python API
 
 ```python
 from video_transcriber.transcribe import transcribe_video
