@@ -79,36 +79,19 @@ pytest -k "test_name_pattern" -v
 - `tests/data/` - Test input data (videos, etc.)
 - `tests/output/` - Test output artifacts
 
-## Installation & Setup
-
-```bash
-# Activate virtual environment (required before running any commands)
-source venv/bin/activate
-
-# Install dependencies (only needed once or when dependencies change)
-pip install -e .[test]
-
-# Ensure ffmpeg is installed (required for audio extraction)
-# Ubuntu/Debian: apt install ffmpeg
-# macOS: brew install ffmpeg
-```
-
-## Running the Code
-
-```bash
-# Run the spike notebook implementation
-jupyter notebook notebooks/spike.ipynb
-
-# Process a video (when code is moved to src/)
-python -m video_transcriber <video_file> [output_dir]
-
-# Preview ignore regions for presenter windows
-python -m video_transcriber <video_file> --preview
-```
-
 ## Configuration Options
 
+The `transcribe_video` function accepts these parameters:
+- `model_size` - Whisper model size: `tiny`, `base`, `small`, `medium`, `large-v3` (default: `base`)
+- `sample_interval` - Check for new slides every N frames (default: `30`)
+- `include_timestamps` - Include timestamps in markdown output (default: `False`)
+- `audio_only` - Transcribe audio only, skip frame extraction (default: `False`)
+
 The `VideoTranscriber` class accepts these key parameters:
-- `whisper_model` - Whisper model size: `tiny`, `base`, `small`, `medium`, `large-v3` (default: `base`)
 - `similarity_threshold` - Frame similarity threshold 0-1 (default: `0.92`) - lower values = more frames captured
 - `min_frame_interval` - Minimum frames between captures to avoid transitions (default: `15`)
+
+The `VideoTranscriber.process_video` method accepts:
+- `sample_interval` - Check every N frames for changes (default: `30`)
+- `transcribe_audio` - Whether to transcribe audio (default: `True`)
+- `extract_frames` - Whether to extract frames, set `False` for audio-only (default: `True`)

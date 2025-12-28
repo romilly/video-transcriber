@@ -46,19 +46,9 @@ Warning: You are sending unauthenticated requests to the HF Hub.
 ```
 
 This is harmless. Everything will still work.
-To get faster downloads and higher rate limits, you can set up a free Hugging Face token _before the installation_:
-
-1. Create an account at https://huggingface.co
-2. Go to Settings → Access Tokens → Create new token (read access is sufficient)
-3. Set the environment variable:
-
-```bash
-export HF_TOKEN=your_token_here  # On Windows: set HF_TOKEN=your_token_here
-```
-
-To make it permanent, add that line to `~/.bashrc` or `~/.profile` (on Windows, set it as a system environment variable).
 
 ## Usage
+
 
 ### Python API
 
@@ -86,9 +76,25 @@ zip_path = transcribe_video(
     "output/",
     model_size="large-v3",     # Whisper model: tiny, base, small, medium, large-v3
     sample_interval=15,        # Check for new slides every N frames (default: 30)
-    include_timestamps=True    # Include timestamps in markdown output (default: False)
+    include_timestamps=True,   # Include timestamps in markdown output (default: False)
+    audio_only=False           # Transcribe audio only, skip frame extraction (default: False)
 )
 ```
+
+### Audio-Only Mode
+
+For videos where you only need the audio transcript (podcasts, interviews, etc.):
+
+```python
+zip_path = transcribe_video(
+    "podcast.mp4",
+    "output/",
+    audio_only=True,
+    include_timestamps=True
+)
+```
+
+This skips frame extraction entirely, producing a zip with just the text transcript.
 
 ## Development
 

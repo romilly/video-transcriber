@@ -171,7 +171,8 @@ class VideoTranscriber:
         self,
         video_path: str,
         sample_interval: int = 30,
-        transcribe_audio: bool = True
+        transcribe_audio: bool = True,
+        extract_frames: bool = True
     ) -> TranscriptResult:
         """Process entire video: extract frames and transcribe audio.
 
@@ -179,6 +180,7 @@ class VideoTranscriber:
             video_path: Path to video file
             sample_interval: Check every N frames for changes
             transcribe_audio: Whether to transcribe audio (requires audio ports)
+            extract_frames: Whether to extract frames (set False for audio-only)
 
         Returns:
             TranscriptResult with frames and audio segments
@@ -188,12 +190,13 @@ class VideoTranscriber:
         if transcribe_audio and self.audio_extractor and self.audio_transcriber:
             audio_segments = self._extract_and_transcribe_audio(video_path)
 
-        # Extract frames
-        frames = self._extract_and_transcribe_frames(
-            video_path, sample_interval
-        )
-
-        # Merge audio with frames based on timestamps
-        frames = self._merge_audio_with_frames(frames, audio_segments)
+        # Extract frames (unless audio-only mode)
+        frames = []
+        if extract_frames:
+            frames = self._extract_and_transcribe_frames(
+                video_path, sample_interval
+            )
+            # Merge audio with frames based on timestamps
+            frames = self._merge_audio_with_frames(frames, audio_segments)
 
         return TranscriptResult(frames=frames, audio_segments=audio_segments)

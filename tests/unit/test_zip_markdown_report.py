@@ -153,3 +153,35 @@ class TestZipMarkdownReportGenerator:
 
             # Audio segments should have timestamp prefixes
             assert "[0:00 - 0:03]" in markdown_content or "[0:00 - 3:30]" in markdown_content
+
+    def test_generates_audio_only_transcript(self, temp_output_dir):
+        """Test that generator produces proper output for audio-only (no frames)."""
+        # Given: A TranscriptResult with only audio segments (no frames)
+        audio_segments = [
+            AudioSegment(0.0, 3.5, "Hello everyone, welcome."),
+            AudioSegment(3.5, 7.0, "Today we discuss transcription."),
+            AudioSegment(7.0, 10.0, "Let's get started."),
+        ]
+        result = TranscriptResult(frames=[], audio_segments=audio_segments)
+        generator = ZipMarkdownReportGenerator(include_timestamps=True)
+        output_path = os.path.join(temp_output_dir, "audio_only.zip")
+
+        # When: Generate zip report
+        generator.generate(result, output_path=output_path)
+
+        # Then: Zip contains markdown with audio transcript
+        with zipfile.ZipFile(output_path, 'r') as zf:
+            markdown_content = zf.read("transcript.md").decode('utf-8')
+
+            # Should have title and audio content
+            assert "# " in markdown_content
+            assert "Hello everyone" in markdown_content
+            assert "Today we discuss" in markdown_content
+            assert "Let's get started" in markdown_content
+
+            # Should have timestamps
+            assert "[0:00 - 0:03]" in markdown_content
+
+            # Should NOT have the "no frames" message or image references
+            assert "No frames extracted" not in markdown_content
+            assert "img/" not in markdown_content

@@ -47,6 +47,7 @@ class ZipMarkdownReportGenerator:
         Generate markdown content from TranscriptResult.
 
         Creates a timeline-merged format showing slides with their associated audio.
+        For audio-only results (no frames), outputs just the audio transcript.
 
         Args:
             result: The TranscriptResult to convert to markdown
@@ -57,6 +58,9 @@ class ZipMarkdownReportGenerator:
         lines = ["# Video Transcript\n"]
 
         if not result.frames:
+            # Audio-only mode: output audio segments without frame references
+            if result.audio_segments:
+                return self._generate_audio_only_markdown(result.audio_segments)
             lines.append("No frames extracted from video.\n")
             return "\n".join(lines)
 
@@ -83,6 +87,28 @@ class ZipMarkdownReportGenerator:
                         lines.append(f"- {seg.text}\n")
 
             lines.append("")  # Blank line between slides
+
+        return "\n".join(lines)
+
+    def _generate_audio_only_markdown(self, audio_segments: list) -> str:
+        """
+        Generate markdown for audio-only transcripts (no frames).
+
+        Args:
+            audio_segments: List of AudioSegment objects
+
+        Returns:
+            str: Markdown-formatted audio transcript
+        """
+        lines = ["# Audio Transcript\n"]
+
+        for seg in audio_segments:
+            if self.include_timestamps:
+                start = self._format_timestamp(seg.start_seconds)
+                end = self._format_timestamp(seg.end_seconds)
+                lines.append(f"[{start} - {end}] {seg.text}\n")
+            else:
+                lines.append(f"{seg.text}\n")
 
         return "\n".join(lines)
 

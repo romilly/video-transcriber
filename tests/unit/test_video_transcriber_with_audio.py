@@ -237,3 +237,39 @@ class TestVideoTranscriberWithAudio:
         assert len(result.frames) == 1
         # But no audio segments
         assert len(result.audio_segments) == 0
+
+    def test_can_skip_frame_extraction_for_audio_only(self):
+        """VideoTranscriber can skip frame extraction to do audio-only transcription."""
+        frame1 = Frame(0, 0.0, np.zeros((100, 100, 3), dtype=np.uint8))
+
+        fake_video = FakeVideoReader(
+            metadata=VideoMetadata(640, 480, 30.0, 30, 1.0),
+            frames=[frame1]
+        )
+        audio_segments = [
+            AudioSegment(0.0, 0.5, "Hello world"),
+            AudioSegment(0.5, 1.0, "This is audio only")
+        ]
+        fake_audio_extractor = FakeAudioExtractor()
+        fake_audio_transcriber = FakeAudioTranscriber(segments=audio_segments)
+
+        ports = TranscriberPorts(
+            video_reader=fake_video,
+            audio_extractor=fake_audio_extractor,
+            audio_transcriber=fake_audio_transcriber
+        )
+        transcriber = VideoTranscriber(ports=ports)
+
+        result = transcriber.process_video(
+            "dummy.mp4",
+            sample_interval=1,
+            extract_frames=False  # Audio-only mode
+        )
+
+        # Should have transcribed audio
+        assert fake_audio_transcriber.call_count == 1
+        assert len(result.audio_segments) == 2
+        assert result.audio_segments[0].text == "Hello world"
+
+        # Should NOT have any frames
+        assert len(result.frames) == 0
