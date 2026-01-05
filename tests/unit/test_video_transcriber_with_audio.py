@@ -273,3 +273,60 @@ class TestVideoTranscriberWithAudio:
 
         # Should NOT have any frames
         assert len(result.frames) == 0
+
+    def test_audio_before_first_frame_is_included(self):
+        """Audio segments that start before the first detected frame are included."""
+        # First frame appears at 5.0 seconds (simulating a video where
+        # the first distinct frame is detected after some intro content)
+        frame1_img = np.zeros((100, 100, 3), dtype=np.uint8)
+        frame1_img[:, 50:] = 255
+
+        frame2_img = np.zeros((100, 100, 3), dtype=np.uint8)
+        frame2_img[50:, :] = 255
+
+        frame1 = Frame(150, 5.0, frame1_img)  # First frame at 5 seconds
+        frame2 = Frame(450, 15.0, frame2_img)  # Second frame at 15 seconds
+
+        fake_video = FakeVideoReader(
+            metadata=VideoMetadata(640, 480, 30.0, 600, 20.0),
+            frames=[frame1, frame2]
+        )
+
+        # Audio segments - some start BEFORE the first frame's timestamp
+        audio_segments = [
+            AudioSegment(0.5, 2.0, "Welcome to the presentation"),
+            AudioSegment(2.5, 4.0, "Let me introduce the topic"),
+            AudioSegment(6.0, 8.0, "Here is the first slide"),
+            AudioSegment(16.0, 18.0, "And here is the second slide")
+        ]
+        fake_audio_extractor = FakeAudioExtractor()
+        fake_audio_transcriber = FakeAudioTranscriber(segments=audio_segments)
+
+        ports = TranscriberPorts(
+            video_reader=fake_video,
+            audio_extractor=fake_audio_extractor,
+            audio_transcriber=fake_audio_transcriber
+        )
+        config = TranscriberConfig(
+            similarity_threshold=0.51,
+            min_frame_interval=1
+        )
+        transcriber = VideoTranscriber(ports=ports, config=config)
+
+        result = transcriber.process_video("dummy.mp4", sample_interval=1)
+
+        # Frame 1 (first frame, should get ALL audio from 0s to 15s)
+        # This includes audio that started BEFORE the frame's timestamp of 5s
+        frame1_audio = result.frames[0].audio_segments
+        assert len(frame1_audio) == 3, (
+            f"Expected 3 audio segments for first frame, got {len(frame1_audio)}. "
+            f"Audio before first frame timestamp should not be lost."
+        )
+        assert frame1_audio[0].text == "Welcome to the presentation"
+        assert frame1_audio[1].text == "Let me introduce the topic"
+        assert frame1_audio[2].text == "Here is the first slide"
+
+        # Frame 2 (15s onwards) should get remaining audio
+        frame2_audio = result.frames[1].audio_segments
+        assert len(frame2_audio) == 1
+        assert frame2_audio[0].text == "And here is the second slide"

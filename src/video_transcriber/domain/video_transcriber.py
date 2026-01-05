@@ -152,7 +152,8 @@ class VideoTranscriber:
 
         for i, frame in enumerate(frames):
             # Find time range for this frame
-            start_time = frame.timestamp_seconds
+            # First frame captures all audio from the start of the video
+            start_time = 0.0 if i == 0 else frame.timestamp_seconds
             if i + 1 < len(frames):
                 end_time = frames[i + 1].timestamp_seconds
             else:
