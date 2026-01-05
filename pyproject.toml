@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "video-transcriber"
-version = "0.3"
+version = "0.3.1"
 description = "A Python project following TDD principles"
 authors = [{name = "Romilly Cocking", email = "romilly.cocking@gmail.com"}]
 license = "MIT"
