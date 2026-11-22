@@ -3,6 +3,7 @@
 Extracts visually distinct frames from videos and transcribes audio using Whisper.
 Creates a portable zip file containing a markdown transcript with slide images in the img sub-directory.
 
+---
 ## Features
 
 - **Smart slide detection** - Uses perceptual hashing to capture only distinct frames, not every frame
@@ -10,6 +11,7 @@ Creates a portable zip file containing a markdown transcript with slide images i
 - **Timeline merging** - Associates transcribed audio with the corresponding slides
 - **Portable output** - Generates a zip file with markdown and images that works anywhere
 
+---
 ## Requirements
 
 - Python 3.10+
@@ -26,12 +28,74 @@ brew install ffmpeg
 winget install ffmpeg
 ```
 
+---
 ## Installation
+
+### Create a Python Virtual Environment
 
 ```bash
 uv venv
 source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 uv pip install video-transcriber
+```
+
+### Create a Conda Python Virtual Environment
+
+```sh
+CONDA_ENV_NAME="video-transcription"
+PYTHON_VERSION="3.13"
+CONDA_ENV="$CONDA_ENV_NAME-${PYTHON_VERSION//[-.]/}"
+CONDA_CHANNEL="conda-forge"
+echo $CONDA_ENV
+
+# create conda environment
+conda create -y \
+  python=$PYTHON_VERSION \
+  -n $CONDA_ENV \
+  -c $CONDA_CHANNEL
+
+# configure conda-pypi integration
+conda config --set solver rattler
+conda config --append channels conda-pypi
+```
+
+Install required packages
+```sh
+conda install -y \
+  -n $CONDA_ENV \
+  -c $CONDA_CHANNEL \
+  ffmpeg \
+  opencv \
+  numpy \
+  pillow \
+  faster-whisper
+```
+
+Install required packages for running test scripts:
+```sh
+conda install -y \
+  -n $CONDA_ENV \
+  -c $CONDA_CHANNEL \
+  pytest \
+  pytest-cov \
+  notebook \
+  build
+```
+
+Clone git repository:
+```sh
+git clone https://github.com/romilly/video-transcriber.git
+cd video-transcriber
+```
+
+Activate conda environment:
+```sh
+conda activate video-transcription-313
+```
+
+Build and install package into conda environment:
+```sh
+conda pypi install -e .
 ```
 
 ### Hugging Face
