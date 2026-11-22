@@ -17,7 +17,7 @@ class ZipMarkdownReportGenerator:
         """
         self.include_timestamps = include_timestamps
 
-    def generate(self, result: TranscriptResult, output_path: str) -> str:
+    def generate(self, result: TranscriptResult, output_path: str, markdown_filename: str = "transcript.md") -> str:
         """
         Generate a zip file containing markdown transcript and frame images.
 
@@ -38,7 +38,7 @@ class ZipMarkdownReportGenerator:
 
             # Generate and save markdown
             markdown = self._generate_markdown(result)
-            zf.writestr("transcript.md", markdown.encode('utf-8'))
+            zf.writestr(markdown_filename, markdown.encode('utf-8'))
 
         return output_path
 
