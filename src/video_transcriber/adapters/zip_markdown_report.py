@@ -17,7 +17,7 @@ class ZipMarkdownReportGenerator:
         """
         self.include_timestamps = include_timestamps
 
-    def generate(self, result: TranscriptResult, output_path: str) -> str:
+    def generate(self, result: TranscriptResult, output_path: str, markdown_filename: str = "transcript.md") -> str:
         """
         Generate a zip file containing markdown transcript and frame images.
 
@@ -32,13 +32,13 @@ class ZipMarkdownReportGenerator:
         with zipfile.ZipFile(output_path, 'w', zipfile.ZIP_DEFLATED) as zf:
             # Save frame images
             for i, frame in enumerate(result.frames):
-                image_filename = f"img/frame_{i:03d}.png"
+                image_filename = f"image/frame_{i + 1:03d}.png"
                 image_bytes = frame.to_png_bytes()
                 zf.writestr(image_filename, image_bytes)
 
             # Generate and save markdown
             markdown = self._generate_markdown(result)
-            zf.writestr("transcript.md", markdown.encode('utf-8'))
+            zf.writestr(markdown_filename, markdown.encode('utf-8'))
 
         return output_path
 
@@ -73,7 +73,7 @@ class ZipMarkdownReportGenerator:
                 lines.append(f"## Slide {i + 1}\n")
 
             # Image link
-            lines.append(f"![Slide {i + 1}](img/frame_{i:03d}.png)\n")
+            lines.append(f"![Slide {i + 1}](image/frame_{i + 1:03d}.png)\n")
 
             # Audio segments associated with this frame
             if frame.audio_segments:
