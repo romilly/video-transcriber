@@ -17,11 +17,11 @@ from video_transcriber.domain.video_transcriber import VideoTranscriber, Transcr
 def main():
     # Setup paths
     video_filename = "demo"
-    video_path = "tests/data/demo.mp4"
+    video_path = f"tests/data/{video_filename}.mp4"
     output_dir = Path("tests/data/generated")
     output_dir.mkdir(exist_ok=True)
 
-    output_zip = output_dir / "demo.zip"
+    output_zip = output_dir / f"{video_filename}.zip"
 
     print(f"🎬 Processing video: {video_path}")
     print(f"📦 Output will be saved to: {output_zip}")
