@@ -111,8 +111,18 @@ Warning: You are sending unauthenticated requests to the HF Hub.
 
 This is harmless. Everything will still work.
 
+---
 ## Usage
 
+### Shell Script
+
+Use the supplied `video-transcribe.sh` and `video-transcribe.sh` files to download all `*.mp4` video files saved locally.
+The text file should contain the full path to the local video file.
+
+```sh
+conda activate video-transcription-313
+video-transcribe.sh ./video.txt
+```
 
 ### Python API
 
@@ -160,6 +170,7 @@ zip_path = transcribe_video(
 
 This skips frame extraction entirely, producing a zip with just the text transcript.
 
+---
 ## Development
 
 ```bash
