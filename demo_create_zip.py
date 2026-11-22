@@ -16,6 +16,7 @@ from video_transcriber.domain.video_transcriber import VideoTranscriber, Transcr
 
 def main():
     # Setup paths
+    video_filename = "demo"
     video_path = "tests/data/demo.mp4"
     output_dir = Path("tests/data/generated")
     output_dir.mkdir(exist_ok=True)
@@ -51,14 +52,14 @@ def main():
     # Generate zip file
     print("📝 Generating markdown and creating zip file...")
     generator = ZipMarkdownReportGenerator()
-    zip_path = generator.generate(result, output_path=str(output_zip))
+    zip_path = generator.generate(result, output_path=str(output_zip), markdown_filename=f"{video_filename}-transcript.md")
 
     print(f"🎉 Done! Created: {zip_path}")
     print()
     print("📂 To view the transcript:")
     print(f"   1. Unzip: unzip {zip_path}")
-    print(f"   2. View: cat transcript.md")
-    print(f"   3. Or open transcript.md in your favorite markdown viewer")
+    print(f"   2. View: cat {video_filename}-transcript.md")
+    print(f"   3. Or open {video_filename}-transcript.md in your favorite markdown viewer")
 
 
 if __name__ == "__main__":
